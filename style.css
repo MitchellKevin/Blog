@@ -7,11 +7,11 @@
 
 /* === VARIABLES === */
 :root {
-    --bg: #0c0c0a;
-    --fg: #f0ece3;
+    --bg: #f5f2eb;
+    --fg: #1a1a16;
     --accent: #c8a96e;
-    --muted: #52524a;
-    --border: #1e1e1a;
+    --muted: #9a9a8e;
+    --border: #e2ddd4;
     --font-display: 'Playfair Display', Georgia, serif;
     --font-body: 'Inter', system-ui, sans-serif;
     --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
@@ -25,7 +25,7 @@ body {
     color: var(--fg);
     font-family: var(--font-body);
     font-weight: 300;
-    font-size: 16px;
+    font-size: 20px;
     line-height: 1.6;
     overflow-x: hidden;
     cursor: none;
@@ -135,7 +135,8 @@ img {
 /* === HEADER === */
 .header {
     position: fixed;
-    backdrop-filter: blur(5px);
+    background: rgba(245, 242, 235, 0.82);
+    backdrop-filter: blur(12px);
     top: 0;
     left: 0;
     right: 0;
@@ -144,7 +145,7 @@ img {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    mix-blend-mode: difference;
+    border-bottom: 1px solid var(--border);
 }
 
 .header-logo {
@@ -161,7 +162,7 @@ img {
 }
 
 .header-nav a {
-    font-size: 0.72rem;
+    font-size: 0.85rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: var(--fg);
@@ -180,7 +181,7 @@ img {
     display: flex;
     align-items: center;
     gap: 0.4rem;
-    font-size: 0.72rem;
+    font-size: 0.85rem;
     letter-spacing: 0.04em;
 }
 
@@ -218,7 +219,7 @@ img {
 }
 
 .hero-eyebrow {
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     opacity: 0;
@@ -297,7 +298,7 @@ img {
 .scroll-pill {
     width: 24px;
     height: 38px;
-    border: 1px solid rgba(240, 236, 227, 0.3);
+    border: 1px solid rgba(26, 26, 22, 0.25);
     border-radius: 12px;
     display: flex;
     justify-content: center;
@@ -319,7 +320,7 @@ img {
 }
 
 .hero-scroll-indicator span {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     opacity: 0.4;
@@ -336,7 +337,7 @@ img {
 }
 
 .stat-label {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     opacity: 0.4;
@@ -360,7 +361,7 @@ img {
 }
 
 .marquee-inner span {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     letter-spacing: 0.25em;
     text-transform: uppercase;
     opacity: 0.35;
@@ -396,7 +397,7 @@ img {
 }
 
 .section-label {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     opacity: 0.35;
@@ -482,13 +483,13 @@ img {
 
 .card-number {
     font-family: var(--font-display);
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     font-style: italic;
     color: var(--muted);
 }
 
 .card-tag {
-    font-size: 0.6rem;
+    font-size: 0.8rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--accent);
@@ -501,9 +502,118 @@ img {
     opacity: 0.6;
 }
 
+/* === GOALS / LEERDOELEN === */
+.goals-section {
+    padding: 14rem 2.5rem;
+    border-top: 1px solid var(--border);
+}
+
+.goals-header {
+    text-align: center;
+    margin-bottom: 5rem;
+}
+
+.goals-eyebrow {
+    font-size: 0.85rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    opacity: 0.35;
+    display: block;
+    margin-bottom: 1.5rem;
+    font-family: var(--font-body);
+}
+
+.goals-title {
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 6vw, 6rem);
+    font-weight: 700;
+    letter-spacing: -0.04em;
+    line-height: 1.05;
+}
+
+.goals-title em { font-style: italic; font-weight: 400; }
+
+.goals-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.goal-card {
+    position: relative;
+    border-radius: 1.25rem;
+    padding: 4.5rem 2.25rem 2.75rem;
+    min-height: 520px;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transition: transform 0.4s var(--ease-out), box-shadow 0.4s;
+}
+
+.goal-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* Punched hole at top */
+.goal-card::before {
+    content: '';
+    position: absolute;
+    top: 1.4rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    background: var(--bg);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.18);
+    z-index: 2;
+}
+
+.goal-card--warm  { background: #e8d59e; }
+.goal-card--dark  { background: var(--fg); }
+.goal-card--sage  { background: #b8c9ab; }
+
+.goal-card--dark::before { background: #2c2c28; }
+
+.goal-card-stat {
+    font-family: var(--font-display);
+    font-size: clamp(4rem, 9vw, 8rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    margin-top: auto;
+}
+
+.goal-card--warm .goal-card-stat,
+.goal-card--sage .goal-card-stat  { color: var(--fg); }
+.goal-card--dark .goal-card-stat  { color: #fff; }
+
+.goal-card-body p {
+    font-size: 0.88rem;
+    line-height: 1.75;
+}
+
+.goal-card--warm .goal-card-body p,
+.goal-card--sage .goal-card-body p { color: rgba(26, 26, 22, 0.65); }
+.goal-card--dark .goal-card-body p { color: rgba(255, 255, 255, 0.6); }
+
+.goal-card-tag {
+    font-size: 0.8rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    font-family: var(--font-body);
+}
+
+.goal-card--warm .goal-card-tag,
+.goal-card--sage .goal-card-tag { color: rgba(26, 26, 22, 0.45); }
+.goal-card--dark .goal-card-tag { color: rgba(255, 255, 255, 0.4); }
+
 /* === GRID SECTION === */
 .grid-section {
-    padding: 8rem 2.5rem 10rem;
+    padding: 12rem 2.5rem 14rem;
     border-top: 1px solid var(--border);
 }
 
@@ -525,7 +635,7 @@ img {
 .grid-header h2 em { font-style: italic; font-weight: 400; }
 
 .grid-header p {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     opacity: 0.3;
@@ -591,7 +701,7 @@ img {
 .grid-item:hover .grid-item-info { transform: translateY(0); }
 
 .grid-item-tag {
-    font-size: 0.6rem;
+    font-size: 0.8rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     color: var(--accent);
@@ -621,14 +731,14 @@ img {
 }
 
 .footer-center {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     opacity: 0.25;
 }
 
 .footer-meta {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     letter-spacing: 0.1em;
     opacity: 0.25;
 }
@@ -647,7 +757,7 @@ img {
 
 /* === FEATURE SECTION (Sprint 0, Hackathon, Meesterproef) === */
 .feature-section {
-    padding: 8rem 2.5rem 10rem;
+    padding: 12rem 2.5rem 14rem;
     border-top: 1px solid var(--border);
 }
 
@@ -669,7 +779,7 @@ img {
 .feature-header h2 em { font-style: italic; font-weight: 400; }
 
 .feature-header p {
-    font-size: 0.7rem;
+    font-size: 0.85rem;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     opacity: 0.3;
@@ -705,7 +815,7 @@ img {
 }
 
 .feature-card-label {
-    font-size: 0.65rem;
+    font-size: 0.85rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--accent);
@@ -729,7 +839,7 @@ img {
 }
 
 .feature-card-link {
-    font-size: 0.65rem;
+    font-size: 0.85rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     opacity: 0.4;
@@ -741,7 +851,7 @@ img {
 
 /* === VAKKEN SECTION === */
 .vakken-section {
-    padding: 8rem 2.5rem 10rem;
+    padding: 12rem 2.5rem 14rem;
     border-top: 1px solid var(--border);
 }
 
@@ -764,17 +874,17 @@ img {
 
 .vakken-item + .vakken-item { border-left: 1px solid var(--border); }
 
-.vakken-item:hover { background: rgba(240, 236, 227, 0.03); }
+.vakken-item:hover { background: rgba(26, 26, 22, 0.04); }
 
 .vakken-item-number {
     font-family: var(--font-display);
-    font-size: 0.75rem;
+    font-size: 0.9rem;
     font-style: italic;
     color: var(--muted);
 }
 
 .vakken-item-tag {
-    font-size: 0.58rem;
+    font-size: 0.8rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--accent);
@@ -802,7 +912,7 @@ img {
 
 /* === GESPREKKEN SECTION === */
 .gesprekken-section {
-    padding: 8rem 2.5rem 10rem;
+    padding: 12rem 2.5rem 14rem;
     border-top: 1px solid var(--border);
 }
 
@@ -842,7 +952,7 @@ img {
 .gesprek-card:hover .gesprek-card-num { color: var(--muted); }
 
 .gesprek-card-label {
-    font-size: 0.62rem;
+    font-size: 0.82rem;
     letter-spacing: 0.22em;
     text-transform: uppercase;
     color: var(--accent);
@@ -866,7 +976,7 @@ img {
 }
 
 .gesprek-card-link {
-    font-size: 0.62rem;
+    font-size: 0.82rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
     opacity: 0.3;
@@ -905,6 +1015,9 @@ img {
     .vakken-item:nth-child(odd) { border-right: 1px solid var(--border); }
     .vakken-item:nth-child(3),
     .vakken-item:nth-child(4) { border-top: 1px solid var(--border); }
+
+    .goals-section { padding: 6rem 1.5rem; }
+    .goals-grid { grid-template-columns: 1fr; gap: 1rem; }
 
     .gesprekken-grid { grid-template-columns: 1fr; }
 

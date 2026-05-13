@@ -75,15 +75,15 @@ document.addEventListener('mousemove', e => {
         const size = headSize * (1 - t * 0.9);
         const half = size / 2;
 
-        // --fg (#f0ece3) → --accent (#c8a96e)
-        const r = Math.round(lerp(240, 200, t * 0.7));
-        const g = Math.round(lerp(236, 169, t * 0.7));
-        const b = Math.round(lerp(227, 110, t * 0.7));
+        // --fg (#1a1a16) → --accent (#c8a96e)
+        const r = Math.round(lerp(26, 200, t * 0.7));
+        const g = Math.round(lerp(26, 169, t * 0.7));
+        const b = Math.round(lerp(22, 110, t * 0.7));
 
         const glowRadius = 8 + trailSpeed * 10;
-        const glowAlpha  = (0.2 + trailSpeed * 0.25) * (1 - t);
+        const glowAlpha  = (0.15 + trailSpeed * 0.2) * (1 - t);
         const glow = i < 3
-            ? `0 0 ${glowRadius * (1 - i * 0.3)}px ${Math.max(glowRadius * 0.4 * (1 - i * 0.3), 0)}px rgba(240,236,227,${glowAlpha.toFixed(2)})`
+            ? `0 0 ${glowRadius * (1 - i * 0.3)}px ${Math.max(glowRadius * 0.4 * (1 - i * 0.3), 0)}px rgba(26,22,18,${glowAlpha.toFixed(2)})`
             : 'none';
 
         el.style.transform = `translate(${x - half}px,${y - half}px)`;

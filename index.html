@@ -7,6 +7,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="test.css">
+    <link rel="stylesheet" href="project-carousel.css">
     <title>Mitchell — Minor WDD Blog</title>
 </head>
 <body>
@@ -75,106 +77,170 @@
         </div>
     </div>
 
-    <section class="scroll-section" id="scroll-section">
-        <div class="scroll-sticky">
-            <div class="scroll-section-header reveal">
-                <span class="section-label">Selected</span>
-                <h2>Weekly <em>Geek</em></h2>
+<section class="slider" id="projecten-section">
+
+  <div class="slider__header">
+    <span class="slider__label">Projecten</span>
+  </div>
+
+  <div class="slider__body">
+    <div class="slider__left">
+      <h2 class="slider__title" aria-live="polite"></h2>
+      <div class="slider__footer">
+        <p class="slider__subtitle"></p>
+        <a class="slider__cta" href="#" target="_blank" rel="noopener">Bekijk project →</a>
+      </div>
+    </div>
+    <div class="slider__right">
+      <div class="slider__images"></div>
+    </div>
+  </div>
+
+</section>
+
+    <!-- === LEERDOELEN === -->
+    <section class="goals-section">
+        <div class="goals-header">
+            <span class="goals-eyebrow">Minor WDD · 2026</span>
+            <h2 class="goals-title">Drie doelen die<br><em>mij drijven</em></h2>
+        </div>
+        <div class="goals-grid">
+            <div class="goal-card goal-card--warm">
+                <div class="goal-card-stat">CSS</div>
+                <div class="goal-card-body">
+                    <p>Experimenteren met geavanceerde CSS-technieken als scroll-driven animations, container queries en custom properties — buiten de gebaande paden.</p>
+                </div>
+                <span class="goal-card-tag">CSS to the Rescue</span>
             </div>
-            <div class="carousel" id="carousel">
-                <a href="weekly_geeks/killian-valkhof.html" class="card">
-                    <div class="card-image">
-                        <img src="weekly_geeks/killian-valkhof.png" alt="Killian Valkhof">
-                        <div class="card-overlay"></div>
-                    </div>
-                    <div class="card-meta">
-                        <span class="card-number">No. 001</span>
-                        <span class="card-tag">Polypane</span>
-                    </div>
-                    <p class="card-title">Killian Valkhof</p>
-                </a>
-                <div class="card card--tall">
-                    <div class="card-image">
-                        <img src="weekly_geeks/peter-paul-koch.png" alt="Studio Notes">
-                        <div class="card-overlay"></div>
-                    </div>
-                    <div class="card-meta">
-                        <span class="card-number">No. 002</span>
-                        <span class="card-tag">Web Conferences Amsterdam</span>
-                    </div>
-                    <p class="card-title">Pieter Paul Koch</p>
+            <div class="goal-card goal-card--dark">
+                <div class="goal-card-stat">JS</div>
+                <div class="goal-card-body">
+                    <p>Vanilla JavaScript schrijven zonder frameworks. API's aanspreken, DOM manipuleren en alles van scratch bouwen — geen shortcuts.</p>
                 </div>
-                <div class="card">
-                    <div class="card-image">
-                        <img src="weekly_geeks/nils-binder.png" alt="The Record">
-                        <div class="card-overlay"></div>
-                    </div>
-                    <div class="card-meta">
-                        <span class="card-number">No. 003</span>
-                        <span class="card-tag">9elements</span>
-                    </div>
-                    <p class="card-title">Nils Binder</p>
+                <span class="goal-card-tag">Web App from Scratch</span>
+            </div>
+            <div class="goal-card goal-card--sage">
+                <div class="goal-card-stat">UX</div>
+                <div class="goal-card-body">
+                    <p>Ontwerpen vanuit de gebruiker. Iteratief testen met echte mensen, luisteren naar feedback en vertalen naar een betere interface.</p>
                 </div>
-                <div class="card">
-                    <div class="card-image">
-                        <img src="weekly_geeks/robert-broersma.png" alt="Frequencies">
-                        <div class="card-overlay"></div>
-                    </div>
-                    <div class="card-meta">
-                        <span class="card-number">No. 004</span>
-                        <span class="card-tag">NL Design System</span>
-                    </div>
-                    <p class="card-title">Robert Broersma</p>
-                </div>
-                <div class="card card--tall">
-                    <div class="card-image">
-                        <img src="weekly_geeks/john-huijkman.png" alt="Analog Dreams">
-                        <div class="card-overlay"></div>
-                    </div>
-                    <div class="card-meta">
-                        <span class="card-number">No. 005</span>
-                        <span class="card-tag">Stichting Appt</span>
-                    </div>
-                    <p class="card-title">John Huijkman</p>
-                </div>
-                <div class="card">
-                    <div class="card-image">
-                        <img src="weekly_geeks/nadieh-bremer.png" alt="Live Circuit">
-                        <div class="card-overlay"></div>
-                    </div>
-                    <div class="card-meta">
-                        <span class="card-number">No. 006</span>
-                        <span class="card-tag">Showcase</span>
-                    </div>
-                    <p class="card-title">Smashing Conference 2026</p>
-                </div>
-                <div class="card">
-                    <div class="card-image">
-                        <img src="weekly_geeks/kevin-powell.png" alt="Sound Theory">
-                        <div class="card-overlay"></div>
-                    </div>
-                    <div class="card-meta">
-                        <span class="card-number">No. 007</span>
-                        <span class="card-tag">Educate</span>
-                    </div>
-                    <p class="card-title">Sound Theory</p>
-                </div>
-                <div class="card card--tall">
-                    <div class="card-image">
-                        <img src="weekly_geeks/niels-leenheen.png" alt="Echo Chamber">
-                        <div class="card-overlay"></div>
-                    </div>
-                    <div class="card-meta">
-                        <span class="card-number">No. 008</span>
-                        <span class="card-tag">Inspire</span>
-                    </div>
-                    <p class="card-title">Echo Chamber</p>
-                </div>
+                <span class="goal-card-tag">Human Centered Design</span>
             </div>
         </div>
     </section>
 
-    <section class="grid-section" id="grid-selection">
+<section class="weekly-geek-carousel" id="scroll-section">
+    <div class="weekly-geek-header">
+        <h2>Weekly <em>Geek</em></h2>
+        <p>8 talks</p>
+    </div>
+        <div class="carousel">
+	<div class="carousel-item">
+		<div class="carousel-box">
+			<div class="num">01</div>
+			<img src="weekly_geeks/killian-valkhof.png" />
+			<div class="speaker-info">
+				<div class="title">Spreker 01</div>
+				<div class="speaker-bio">
+					<p>Vul hier de samenvatting van de spreker in. Dit is ruimte voor ongeveer 20 regels tekst waarin je de talk, de spreker en de belangrijkste leermomenten beschrijft. Wat vond je interessant? Wat nam je mee? Welke inzichten veranderden jouw kijk op het vak?</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="carousel-item">
+		<div class="carousel-box">
+			<div class="num">02</div>
+			<img src="weekly_geeks/peter-paul-koch.png" />
+			<div class="speaker-info">
+				<div class="title">Spreker 02</div>
+				<div class="speaker-bio">
+					<p>Vul hier de samenvatting van de spreker in. Dit is ruimte voor ongeveer 20 regels tekst waarin je de talk, de spreker en de belangrijkste leermomenten beschrijft. Wat vond je interessant? Wat nam je mee? Welke inzichten veranderden jouw kijk op het vak?</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="carousel-item">
+		<div class="carousel-box">
+			<div class="num">03</div>
+			<img src="weekly_geeks/niels-leenheen.png" />
+			<div class="speaker-info">
+				<div class="title">Spreker 03</div>
+				<div class="speaker-bio">
+					<p>Vul hier de samenvatting van de spreker in. Dit is ruimte voor ongeveer 20 regels tekst waarin je de talk, de spreker en de belangrijkste leermomenten beschrijft. Wat vond je interessant? Wat nam je mee? Welke inzichten veranderden jouw kijk op het vak?</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="carousel-item">
+		<div class="carousel-box">
+			<div class="num">04</div>
+			<img src="weekly_geeks/nils-binder.png" />
+			<div class="speaker-info">
+				<div class="title">Spreker 04</div>
+				<div class="speaker-bio">
+					<p>Vul hier de samenvatting van de spreker in. Dit is ruimte voor ongeveer 20 regels tekst waarin je de talk, de spreker en de belangrijkste leermomenten beschrijft. Wat vond je interessant? Wat nam je mee? Welke inzichten veranderden jouw kijk op het vak?</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="carousel-item">
+		<div class="carousel-box">
+			<div class="num">05</div>
+			<img src="weekly_geeks/robert-broersma.png" />
+			<div class="speaker-info">
+				<div class="title">Spreker 05</div>
+				<div class="speaker-bio">
+					<p>Vul hier de samenvatting van de spreker in. Dit is ruimte voor ongeveer 20 regels tekst waarin je de talk, de spreker en de belangrijkste leermomenten beschrijft. Wat vond je interessant? Wat nam je mee? Welke inzichten veranderden jouw kijk op het vak?</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="carousel-item">
+		<div class="carousel-box">
+			<div class="num">06</div>
+			<img src="weekly_geeks/john-huijkman.png" />
+			<div class="speaker-info">
+				<div class="title">Spreker 06</div>
+				<div class="speaker-bio">
+					<p>Vul hier de samenvatting van de spreker in. Dit is ruimte voor ongeveer 20 regels tekst waarin je de talk, de spreker en de belangrijkste leermomenten beschrijft. Wat vond je interessant? Wat nam je mee? Welke inzichten veranderden jouw kijk op het vak?</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="carousel-item">
+		<div class="carousel-box">
+			<div class="num">07</div>
+			<img src="weekly_geeks/nadieh-bremer.png" />
+			<div class="speaker-info">
+				<div class="title">Spreker 07</div>
+				<div class="speaker-bio">
+					<p>Vul hier de samenvatting van de spreker in. Dit is ruimte voor ongeveer 20 regels tekst waarin je de talk, de spreker en de belangrijkste leermomenten beschrijft. Wat vond je interessant? Wat nam je mee? Welke inzichten veranderden jouw kijk op het vak?</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="carousel-item">
+		<div class="carousel-box">
+			<div class="num">08</div>
+			<img src="weekly_geeks/kevin-powell.png" />
+			<div class="speaker-info">
+				<div class="title">Spreker 08</div>
+				<div class="speaker-bio">
+					<p>Vul hier de samenvatting van de spreker in. Dit is ruimte voor ongeveer 20 regels tekst waarin je de talk, de spreker en de belangrijkste leermomenten beschrijft. Wat vond je interessant? Wat nam je mee? Welke inzichten veranderden jouw kijk op het vak?</p>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+</section>
+    <!-- <section class="grid-section" id="grid-selection">
         <div class="grid-header reveal">
             <h2>Weekly <em>Nerd</em></h2>
             <p>5 total</p>
@@ -226,10 +292,10 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> -->
 
     <!-- === SPRINT 0 === -->
-    <section class="feature-section" id="sprint-section">
+    <!-- <section class="feature-section" id="sprint-section">
         <div class="feature-header reveal">
             <h2>Sprint <em>0</em></h2>
             <p>Oriëntatie</p>
@@ -246,10 +312,10 @@
                 <span class="feature-card-link">Lees verslag →</span>
             </div>
         </a>
-    </section>
+    </section> -->
 
     <!-- === HACKATHON === -->
-    <section class="feature-section" id="hackathon-section">
+    <!-- <section class="feature-section" id="hackathon-section">
         <div class="feature-header reveal">
             <h2>Hacka<em>thon</em></h2>
             <p>Samenwerking</p>
@@ -266,10 +332,10 @@
                 <span class="feature-card-link">Lees verslag →</span>
             </div>
         </a>
-    </section>
+    </section> -->
 
     <!-- === VAKKEN === -->
-    <section class="vakken-section" id="vakken-section">
+    <!-- <section class="vakken-section" id="vakken-section">
         <div class="grid-header reveal">
             <h2>Vak<em>ken</em></h2>
             <p>4 vakken</p>
@@ -300,10 +366,10 @@
                 <span class="vakken-item-tag">JavaScript · Vanilla</span>
             </a>
         </div>
-    </section>
+    </section> -->
 
     <!-- === MEESTERPROEF === -->
-    <section class="feature-section" id="meesterproef-section">
+    <!-- <section class="feature-section" id="meesterproef-section">
         <div class="feature-header reveal">
             <h2>Meester<em>proef</em></h2>
             <p>Eindproject</p>
@@ -320,10 +386,10 @@
                 <span class="feature-card-link">Lees reflectie →</span>
             </div>
         </a>
-    </section>
+    </section> -->
 
     <!-- === DRIE GESPREKKEN === -->
-    <section class="gesprekken-section" id="gesprekken-section">
+    <!-- <section class="gesprekken-section" id="gesprekken-section">
         <div class="grid-header reveal">
             <h2>Drie <em>Gesprekken</em></h2>
             <p>Reflectie</p>
@@ -351,7 +417,7 @@
                 <span class="gesprek-card-link">Lees reflectie →</span>
             </a>
         </div>
-    </section>
+    </section> -->
 
     <footer class="footer">
         <div class="footer-logo"><img src="logo.png" alt="Minor WDD Blog"></div>
@@ -360,5 +426,8 @@
     </footer>
 
     <script src="script.js"></script>
+    <script src="project-carousel.js"></script>
+    <script src="test.js"></script>
+    <script src="https://unpkg.co/gsap@3/dist/gsap.min.js"></script>
 </body>
 </html>
