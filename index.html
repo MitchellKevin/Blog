@@ -1,458 +1,1124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="test.css">
-    <link rel="stylesheet" href="project-carousel.css">
-    <title>Mitchell Minor WDD Blog</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Mitchell Scholte — Meesterschap</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet"/>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  /* Figma design tokens (dark) */
+  --canvas:        #1e1e1e;
+  --chrome:        #2c2c2c;
+  --chrome-2:      #383838;
+  --input:         #2c2c2c;
+  --input-hover:   #383838;
+  --border:        #383838;
+  --divider:       rgba(255,255,255,0.07);
+  --text:          #ffffff;
+  --text-2:        #b3b3b3;
+  --text-3:        #7a7a7a;
+  --icon:          #cdcdcd;
+  --blue:          #0d99ff;
+  --blue-hover:    #0a85e0;
+  --blue-soft:     rgba(13,153,255,0.18);
+  --selected-row:  rgba(13,153,255,0.16);
+  --hover:         rgba(255,255,255,0.06);
+  --mono: 'Space Mono', monospace;
+  --sans: 'Inter', -apple-system, system-ui, sans-serif;
+}
+html, body {
+  width:100%; height:100%; overflow:hidden;
+  background:var(--canvas); color:var(--text);
+  font-family:var(--sans); font-size:11px; user-select:none;
+  -webkit-font-smoothing:antialiased;
+}
+svg { display:block; }
+
+/* ───────────── Top toolbar ───────────── */
+.toolbar {
+  position:fixed; top:0; left:0; right:0; height:40px;
+  background:var(--chrome); border-bottom:1px solid var(--border);
+  display:flex; align-items:center; z-index:100; padding:0 4px;
+}
+.tb-group { display:flex; align-items:center; gap:0; }
+.tb-left  { flex:1; justify-content:flex-start; }
+.tb-center{ position:absolute; left:50%; transform:translateX(-50%); }
+.tb-right { flex:1; justify-content:flex-end; gap:2px; padding-right:6px; }
+
+.tb-btn {
+  height:32px; min-width:32px; padding:0 4px; border:none; background:none;
+  color:var(--icon); cursor:pointer; border-radius:5px;
+  display:flex; align-items:center; justify-content:center; gap:2px;
+  transition:background .1s, color .1s;
+}
+.tb-btn:hover { background:var(--hover); color:#fff; }
+.tb-btn.active { background:var(--blue); color:#fff; }
+.tb-btn.active:hover { background:var(--blue); }
+.tb-caret { opacity:.5; }
+.tb-sep { width:1px; height:18px; background:var(--border); margin:0 6px; }
+
+.tb-logo {
+  width:32px; height:32px; border-radius:5px; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; color:var(--icon);
+}
+.tb-logo:hover { background:var(--hover); }
+
+.tb-file { display:flex; align-items:center; gap:6px; padding:5px 8px; border-radius:5px; cursor:pointer; }
+.tb-file:hover { background:var(--hover); }
+.tb-file-name { font-weight:600; color:var(--text); font-size:12px; }
+.tb-file-crumb { color:var(--text-3); font-size:12px; }
+
+.avatars { display:flex; align-items:center; margin-right:4px; }
+.avatar {
+  width:24px; height:24px; border-radius:50%; border:2px solid var(--chrome);
+  display:flex; align-items:center; justify-content:center;
+  font-size:10px; font-weight:600; color:#fff; margin-left:-6px;
+}
+.avatar:first-child { margin-left:0; }
+.btn-present {
+  width:28px; height:28px; border-radius:5px; border:none; background:none;
+  color:var(--icon); cursor:pointer; display:flex; align-items:center; justify-content:center;
+}
+.btn-present:hover { background:var(--blue); color:#fff; }
+.btn-share {
+  background:var(--blue); color:#fff; border:none; height:28px; padding:0 14px;
+  border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; font-family:var(--sans);
+}
+.btn-share:hover { background:var(--blue-hover); }
+
+/* ───────────── App grid ───────────── */
+.app {
+  position:fixed; top:40px; bottom:0; left:0; right:0;
+  display:grid; grid-template-columns:240px 1fr 240px;
+}
+
+/* ───────────── Left panel ───────────── */
+.panel-left { background:var(--chrome); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
+.panel-tabs { display:flex; height:40px; border-bottom:1px solid var(--divider); padding:0 8px; gap:2px; align-items:center; }
+.panel-tab { padding:6px 8px; font-size:11px; font-weight:600; color:var(--text-3); cursor:pointer; border-radius:5px; }
+.panel-tab:hover { color:var(--text-2); }
+.panel-tab.active { color:var(--text); }
+.panel-tab.active::after { content:''; display:block; height:2px; background:var(--text); border-radius:2px; margin-top:5px; margin-bottom:-6px; }
+
+.section { border-bottom:1px solid var(--divider); }
+.section-head {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:8px 16px 8px 12px; font-size:11px; font-weight:600; color:var(--text-2); cursor:default;
+}
+.section-head .chev { color:var(--text-3); }
+
+.pages { padding:0 8px 8px; }
+.page-row {
+  display:flex; align-items:center; gap:8px; height:28px; padding:0 8px;
+  border-radius:5px; cursor:pointer; font-size:11px; color:var(--text-2);
+}
+.page-row:hover { background:var(--hover); }
+.page-row.active { background:var(--selected-row); color:var(--text); }
+.page-check { width:12px; color:var(--blue); opacity:0; flex-shrink:0; }
+.page-row.active .page-check { opacity:1; }
+
+.layers { padding:0 8px 8px; flex:1; overflow-y:auto; scrollbar-width:thin; }
+.layers::-webkit-scrollbar { width:8px; }
+.layers::-webkit-scrollbar-thumb { background:#4a4a4a; border-radius:4px; border:2px solid var(--chrome); }
+.layer-row {
+  display:flex; align-items:center; gap:6px; height:26px; padding:0 8px;
+  border-radius:5px; cursor:pointer; font-size:11px; color:var(--text-2);
+}
+.layer-row:hover { background:var(--hover); }
+.layer-row.selected { background:var(--selected-row); color:var(--blue); }
+.layer-row .l-icon { color:var(--text-3); flex-shrink:0; }
+.layer-row.selected .l-icon { color:var(--blue); }
+.layer-row .l-name { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.layer-row .l-eye { opacity:0; color:var(--text-3); flex-shrink:0; }
+.layer-row:hover .l-eye { opacity:1; }
+
+/* ───────────── Canvas ───────────── */
+.canvas-wrap { position:relative; overflow:hidden; background:var(--canvas); cursor:default; }
+.canvas-wrap.panning { cursor:grabbing; }
+#dot-grid {
+  position:absolute; inset:0; pointer-events:none;
+  background-image:radial-gradient(circle, #2b2b2b 1.2px, transparent 1.2px);
+  background-size:24px 24px;
+}
+#canvas { position:absolute; top:0; left:0; transform-origin:0 0; }
+.frame { position:absolute; cursor:pointer; }
+.frame-label {
+  position:absolute; top:-20px; left:1px; font-size:11px; font-weight:450;
+  color:var(--text-3); white-space:nowrap; pointer-events:none; letter-spacing:.01em;
+}
+.frame:hover .frame-label, .frame.selected .frame-label { color:var(--blue); }
+.frame-inner { width:100%; height:100%; overflow:hidden; position:relative; outline:1px solid transparent; transition:outline-color .1s; }
+.frame:hover .frame-inner { outline-color:rgba(13,153,255,0.5); }
+.frame.selected .frame-inner { outline:2px solid var(--blue); }
+
+/* blog artwork inside frames (keeps its own mono aesthetic) */
+.fc-cover { height:100%; display:flex; flex-direction:column; justify-content:flex-end; padding:28px; position:relative; overflow:hidden; }
+.fc-cover-glow { position:absolute; inset:0; pointer-events:none; }
+.fc-cover-tag { font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:8px; position:relative; }
+.fc-cover-title { font-family:var(--mono); font-weight:700; line-height:1.15; position:relative; }
+.fc-cover-sub { font-family:var(--sans); font-size:13px; line-height:1.6; margin-top:10px; position:relative; opacity:0.65; }
+.fc-cover-meta { font-family:var(--mono); font-size:10px; margin-top:16px; opacity:0.35; position:relative; }
+.fc-post { height:100%; padding:24px; display:flex; flex-direction:column; gap:12px; }
+.fc-post-tag { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; }
+.fc-post-title { font-family:var(--mono); font-size:17px; font-weight:700; line-height:1.3; color:#f0f0f0; }
+.fc-post-body { font-family:var(--sans); font-size:12px; line-height:1.7; color:#888; flex:1; overflow:hidden; }
+.fc-post-footer { display:flex; align-items:center; justify-content:space-between; padding-top:12px; border-top:1px solid #2a2a2a; margin-top:auto; }
+.fc-post-date { font-family:var(--mono); font-size:9px; color:#555; }
+.fc-post-tags { display:flex; gap:4px; flex-wrap:wrap; }
+.fc-pill { font-family:var(--mono); font-size:9px; padding:2px 6px; border-radius:3px; border:1px solid; }
+.fc-wip { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
+.fc-wip-icon { font-size:24px; opacity:0.15; }
+.fc-wip-text { font-family:var(--mono); font-size:9px; color:#4a4a4a; letter-spacing:0.12em; text-transform:uppercase; }
+/* leerdoelen frame */
+.fc-goals { height:100%; padding:24px; display:flex; flex-direction:column; gap:8px; overflow:hidden; }
+.fc-goals-title { font-family:var(--mono); font-size:18px; font-weight:700; color:#f0f0f0; line-height:1.2; margin-bottom:6px; }
+.goal-list { display:flex; flex-direction:column; gap:11px; }
+.goal { padding:2px 0 2px 12px; border-left:2px solid; }
+.goal-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px; }
+.goal-name { font-family:var(--mono); font-size:12px; font-weight:700; color:#e8e8e8; }
+.goal-status { font-family:var(--mono); font-size:8px; padding:2px 6px; border-radius:3px; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; }
+.goal-text { font-family:var(--sans); font-size:11px; line-height:1.5; color:#888; }
+.section-label { position:absolute; font-family:var(--mono); font-size:11px; color:#383838; letter-spacing:0.1em; text-transform:uppercase; pointer-events:none; white-space:nowrap; }
+
+/* ───────────── Right panel (Design inspector) ───────────── */
+.panel-right { background:var(--chrome); border-left:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto; scrollbar-width:thin; }
+.panel-right::-webkit-scrollbar { width:8px; }
+.panel-right::-webkit-scrollbar-thumb { background:#4a4a4a; border-radius:4px; border:2px solid var(--chrome); }
+.insp-tabs { display:flex; height:40px; align-items:center; padding:0 8px; gap:2px; border-bottom:1px solid var(--divider); flex-shrink:0; }
+.insp-tab { padding:6px 8px; font-size:11px; font-weight:600; color:var(--text-3); cursor:pointer; border-radius:5px; }
+.insp-tab:hover { color:var(--text-2); }
+.insp-tab.active { color:var(--text); }
+
+.insp-section { padding:12px 16px; border-bottom:1px solid var(--divider); }
+.insp-title { font-size:11px; font-weight:600; color:var(--text); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
+.insp-title .add { color:var(--text-3); cursor:pointer; }
+.insp-title .add:hover { color:var(--text); }
+
+.align-row { display:flex; align-items:center; justify-content:space-between; padding:6px 14px; border-bottom:1px solid var(--divider); }
+.align-btn { width:26px; height:26px; border-radius:5px; display:flex; align-items:center; justify-content:center; color:var(--icon); cursor:pointer; }
+.align-btn:hover { background:var(--hover); color:#fff; }
+
+.field-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+.field {
+  display:flex; align-items:center; gap:6px; height:28px; padding:0 8px;
+  background:var(--input); border:1px solid transparent; border-radius:5px; cursor:default;
+}
+.field:hover { border-color:var(--border); background:var(--input-hover); }
+.field .f-key { color:var(--text-3); font-size:11px; width:12px; flex-shrink:0; }
+.field .f-val { color:var(--text); font-size:11px; flex:1; }
+
+.color-row { display:flex; align-items:center; gap:8px; height:28px; padding:0 8px; background:var(--input); border:1px solid transparent; border-radius:5px; }
+.color-row:hover { border-color:var(--border); }
+.swatch { width:16px; height:16px; border-radius:4px; border:1px solid rgba(255,255,255,0.12); flex-shrink:0; }
+.color-hex { flex:1; color:var(--text); font-size:11px; text-transform:uppercase; }
+.color-op { color:var(--text-2); font-size:11px; }
+.color-eye { color:var(--text-3); cursor:pointer; }
+.color-eye:hover { color:var(--text); }
+.stack { display:flex; flex-direction:column; gap:6px; }
+
+.export-btn {
+  width:100%; height:28px; background:var(--input); border:1px solid var(--border);
+  color:var(--text-2); border-radius:6px; font-family:var(--sans); font-size:11px; font-weight:600;
+  cursor:pointer; margin-top:2px;
+}
+.export-btn:hover { background:var(--input-hover); color:var(--text); }
+.export-btn.primary { background:var(--blue); border-color:var(--blue); color:#fff; }
+.export-btn.primary:hover { background:var(--blue-hover); }
+
+/* ───────────── Floating zoom pill ───────────── */
+.zoombar {
+  position:fixed; bottom:16px; right:256px; height:32px; z-index:90;
+  background:var(--chrome); border:1px solid var(--border); border-radius:8px;
+  display:flex; align-items:center; padding:0 2px; box-shadow:0 4px 14px rgba(0,0,0,0.35);
+}
+.zoombar button { width:28px; height:28px; border:none; background:none; color:var(--icon); cursor:pointer; border-radius:5px; font-size:15px; display:flex; align-items:center; justify-content:center; }
+.zoombar button:hover { background:var(--hover); color:#fff; }
+.zoom-val { min-width:46px; text-align:center; font-size:11px; color:var(--text-2); cursor:pointer; padding:0 4px; }
+.zoom-val:hover { color:#fff; }
+
+.minimap {
+  position:fixed; bottom:60px; right:256px; width:150px; height:96px; z-index:90;
+  background:#1a1a1a; border:1px solid var(--border); border-radius:8px; overflow:hidden;
+  box-shadow:0 4px 14px rgba(0,0,0,0.35);
+}
+.minimap-frame { position:absolute; border-radius:1px; pointer-events:none; }
+.minimap-viewport { position:absolute; border:1px solid var(--blue); background:rgba(13,153,255,0.10); pointer-events:none; }
+
+.kbd-hint { position:fixed; bottom:18px; left:256px; font-size:11px; color:var(--text-3); z-index:90; display:flex; gap:14px; align-items:center; }
+.kbd { background:var(--chrome); border:1px solid var(--border); padding:2px 6px; border-radius:4px; color:var(--text-2); font-size:10px; }
+
+/* ───────────── Present mode ───────────── */
+.present { position:fixed; inset:0; z-index:1000; background:#171717; display:none; flex-direction:column; }
+.present.on { display:flex; }
+.present-top {
+  height:48px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
+  padding:0 16px; background:var(--chrome); border-bottom:1px solid var(--border); color:var(--text);
+}
+.present-top .pt-name { font-size:13px; font-weight:600; }
+.present-top .pt-sub { font-size:11px; color:var(--text-3); margin-left:8px; }
+.present-top .pt-right { display:flex; align-items:center; gap:6px; }
+.present-count { font-family:var(--mono); font-size:11px; color:var(--text-2); padding:0 8px; }
+.present-btn { width:30px; height:30px; border:none; background:none; color:var(--icon); cursor:pointer; border-radius:6px; display:flex; align-items:center; justify-content:center; }
+.present-btn:hover { background:var(--hover); color:#fff; }
+.present-stage { flex:1; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+.present-frame { box-shadow:0 30px 80px rgba(0,0,0,0.6); border-radius:6px; overflow:hidden; transform-origin:center; }
+.present-zone { position:absolute; top:0; bottom:0; width:33%; cursor:pointer; z-index:2; display:flex; align-items:center; opacity:0; transition:opacity .15s; }
+.present-zone:hover { opacity:1; }
+.present-zone.prev { left:0; justify-content:flex-start; padding-left:24px; }
+.present-zone.next { right:0; justify-content:flex-end; padding-right:24px; }
+.present-zone svg { color:#fff; filter:drop-shadow(0 2px 6px rgba(0,0,0,.6)); }
+.present-dots { position:absolute; bottom:18px; left:50%; transform:translateX(-50%); display:flex; gap:7px; z-index:3; }
+.present-dot { width:7px; height:7px; border-radius:50%; background:#444; cursor:pointer; transition:background .15s; }
+.present-dot.active { background:var(--blue); }
+
+/* ───────────── Detail page (Figma-style reader) ───────────── */
+.detail { position:fixed; inset:0; z-index:1000; background:var(--canvas); display:none; flex-direction:column; }
+.detail.on { display:flex; }
+.detail-grid {
+  position:absolute; inset:0; pointer-events:none;
+  background-image:radial-gradient(circle, #2b2b2b 1.2px, transparent 1.2px);
+  background-size:24px 24px; opacity:.5;
+}
+.detail-top {
+  height:48px; flex-shrink:0; z-index:2; display:flex; align-items:center; justify-content:space-between;
+  padding:0 12px; background:var(--chrome); border-bottom:1px solid var(--border); color:var(--text);
+}
+.detail-back { display:flex; align-items:center; gap:6px; height:30px; padding:0 10px; border:none; background:none; color:var(--text-2); cursor:pointer; border-radius:6px; font-family:var(--sans); font-size:12px; font-weight:600; }
+.detail-back:hover { background:var(--hover); color:#fff; }
+.detail-crumb { font-size:12px; color:var(--text-3); }
+.detail-crumb b { color:var(--text); font-weight:600; }
+.detail-close { width:30px; height:30px; border:none; background:none; color:var(--icon); cursor:pointer; border-radius:6px; display:flex; align-items:center; justify-content:center; }
+.detail-close:hover { background:var(--hover); color:#fff; }
+.detail-scroll { flex:1; overflow-y:auto; z-index:1; scrollbar-width:thin; }
+.detail-scroll::-webkit-scrollbar { width:10px; }
+.detail-scroll::-webkit-scrollbar-thumb { background:#444; border-radius:5px; border:3px solid var(--canvas); }
+.detail-doc { max-width:760px; margin:48px auto 100px; border-radius:10px; overflow:hidden; box-shadow:0 30px 90px rgba(0,0,0,0.55); border:1px solid var(--divider); position:relative; }
+.dd-frame-label { font-family:var(--mono); font-size:11px; color:var(--text-3); margin:0 auto 8px; max-width:760px; padding-left:2px; }
+.dd-hero { padding:56px 56px 44px; position:relative; overflow:hidden; }
+.dd-hero-glow { position:absolute; inset:0; pointer-events:none; }
+.dd-tag { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:14px; position:relative; }
+.dd-title { font-family:var(--mono); font-weight:700; font-size:52px; line-height:1.05; position:relative; }
+.dd-intro { font-family:var(--sans); font-size:16px; line-height:1.7; color:#cfcfcf; margin-top:20px; max-width:60ch; position:relative; }
+.dd-meta { display:flex; flex-wrap:wrap; gap:10px; padding:20px 56px; border-top:1px solid rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06); background:rgba(0,0,0,0.18); }
+.dd-meta-item { display:flex; flex-direction:column; gap:3px; }
+.dd-meta-k { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3); }
+.dd-meta-v { font-family:var(--sans); font-size:12px; font-weight:600; color:#e6e6e6; }
+.dd-body { padding:44px 56px 52px; background:rgba(0,0,0,0.22); }
+.dd-section { margin-bottom:32px; }
+.dd-h { font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
+.dd-p { font-family:var(--sans); font-size:14.5px; line-height:1.85; color:#a8a8a8; max-width:64ch; }
+.dd-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+.dd-pill { font-family:var(--mono); font-size:10px; padding:3px 9px; border-radius:4px; border:1px solid; }
+</style>
 </head>
 <body>
 
-    <div class="cursor" id="cursor"></div>
-    <div class="cursor-follower" id="cursor-follower"></div>
-
-    <div class="loader" id="loader">
-        <div class="loader-count" id="loader-count">00</div>
-        <div class="loader-bar">
-            <div class="loader-bar-fill" id="loader-bar-fill"></div>
-        </div>
+<!-- ───────── TOP TOOLBAR ───────── -->
+<div class="toolbar">
+  <div class="tb-group tb-left">
+    <div class="tb-logo" title="Hoofdmenu">
+      <svg width="16" height="24" viewBox="0 0 38 57" fill="none">
+        <path d="M19 28.5a9.5 9.5 0 119.5 9.5H19V28.5z" fill="#1ABCFE"/>
+        <path d="M9.5 47.5A9.5 9.5 0 0119 38v9.5a9.5 9.5 0 11-9.5 0z" fill="#0ACF83"/>
+        <path d="M19 0v19h9.5a9.5 9.5 0 100-19H19z" fill="#FF7262"/>
+        <path d="M0 9.5A9.5 9.5 0 009.5 19H19V0H9.5A9.5 9.5 0 000 9.5z" fill="#F24E1E"/>
+        <path d="M0 28.5A9.5 9.5 0 009.5 38H19V19H9.5A9.5 9.5 0 000 28.5z" fill="#A259FF"/>
+      </svg>
     </div>
-
-    <div class="grain"></div>
-
-    <header class="header">
-        <div class="header-logo"><img src="logo.png" alt="Blog of Mitchell Scholte"></div>
-        <nav class="header-nav">
-            <a href="https://mitchellscholte.com/">Portfolio</a>
-            <a href="www.linkedin.com/in/mitchell-scholte-a10652238">LinkedIn</a>
-        </nav>
-    </header>
-
-    <section class="hero">
-        <p class="hero-eyebrow">Mitchell Scholte</p>
-        <h1 class="hero-title">
-            <div class="line"><span>Welcome,</span></div>
-            <div class="line indent"><span><em>to my</em></span></div>
-            <div class="line"><span>Blog.</span></div>
-        </h1>
-        <div class="hero-footer">
-            <div class="hero-scroll-indicator">
-                <div class="scroll-pill">
-                    <div class="scroll-dot-inner"></div>
-                </div>
-                <span>Scroll to explore</span>
-            </div>
-            <div class="hero-stat">
-                <div class="stat-num">WDD</div>
-                <div class="stat-label">Blog</div>
-            </div>
-        </div>
-    </section>
-
-    <div class="marquee-section">
-        <div class="marquee-inner">
-            <span>Music</span><span class="dot">✦</span>
-            <span>Culture</span><span class="dot">✦</span>
-            <span>Sound</span><span class="dot">✦</span>
-            <span>Inspire</span><span class="dot">✦</span>
-            <span>Educate</span><span class="dot">✦</span>
-            <span>Showcase</span><span class="dot">✦</span>
-            <span>Music</span><span class="dot">✦</span>
-            <span>Culture</span><span class="dot">✦</span>
-            <span>Sound</span><span class="dot">✦</span>
-            <span>Inspire</span><span class="dot">✦</span>
-            <span>Educate</span><span class="dot">✦</span>
-            <span>Showcase</span><span class="dot">✦</span>
-        </div>
-    </div>
-
-<section class="slider" id="projecten-section">
-
-  <div class="slider__header">
-    <span class="slider__label">Projecten</span>
+    <div class="tb-sep"></div>
+    <button class="tb-btn active" id="toolMove" title="Verplaatsen (V)" onclick="setTool('move')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 7-6.5 1.8L9.5 18 5 3z"/></svg>
+      <svg class="tb-caret" width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
+    </button>
+    <button class="tb-btn" id="toolScale" title="Schalen (K)" onclick="setTool('scale')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 14v6h6M20 10V4h-6"/><path d="M10 14l-6 6M14 10l6-6"/></svg>
+    </button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" id="toolFrame" title="Frame (F)" onclick="setTool('frame')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg>
+      <svg class="tb-caret" width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
+    </button>
+    <button class="tb-btn" id="toolShape" title="Vorm (R)" onclick="setTool('shape')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="1.5"/></svg>
+      <svg class="tb-caret" width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
+    </button>
+    <button class="tb-btn" id="toolPen" title="Pen (P)" onclick="setTool('pen')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l9 9-4 1-5 5-1 4-9-9 4-1 5-5 1-4z"/></svg>
+      <svg class="tb-caret" width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
+    </button>
+    <button class="tb-btn" id="toolText" title="Tekst (T)" onclick="setTool('text')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 6h14M12 6v13"/></svg>
+    </button>
+    <div class="tb-sep"></div>
+    <button class="tb-btn" id="toolHand" title="Hand (H)" onclick="setTool('hand')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 11V5.5a1.5 1.5 0 013 0V11m0-.5V4.5a1.5 1.5 0 013 0V11m0-.5V6a1.5 1.5 0 013 0v7c0 3.5-2.5 6-6 6s-5-2-6.5-4.5l-2-3.2a1.5 1.5 0 012.4-1.8L8 12"/></svg>
+    </button>
+    <button class="tb-btn" id="toolComment" title="Reactie (C)" onclick="setTool('comment')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 12a8 8 0 01-11.5 7.2L4 20l1-4.2A8 8 0 1120 12z"/></svg>
+    </button>
   </div>
 
-  <div class="slider__body">
-    <div class="slider__left">
-      <h2 class="slider__title" aria-live="polite"></h2>
-      <div class="slider__footer">
-        <p class="slider__subtitle"></p>
-        <a class="slider__cta" href="#" target="_blank" rel="noopener">Bekijk project →</a>
+  <div class="tb-group tb-center">
+    <div class="tb-file" title="Bestand">
+      <span class="tb-file-crumb">Drafts /</span>
+      <span class="tb-file-name" id="fileName">Mitchell Scholte — Meesterschap</span>
+      <svg class="tb-caret" width="9" height="9" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
+    </div>
+  </div>
+
+  <div class="tb-group tb-right">
+    <div class="avatars">
+      <div class="avatar" style="background:#0d99ff" title="Mitchell Scholte">MS</div>
+      <div class="avatar" style="background:#0acf83" title="HvA CMD">HC</div>
+    </div>
+    <button class="btn-share">Delen</button>
+    <button class="btn-present" title="Presenteren" onclick="startPresent()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M6 4l14 8-14 8V4z"/></svg>
+    </button>
+  </div>
+</div>
+
+<!-- ───────── APP ───────── -->
+<div class="app">
+
+  <!-- LEFT PANEL -->
+  <div class="panel-left">
+    <div class="panel-tabs">
+      <div class="panel-tab active">Bestand</div>
+      <div class="panel-tab">Assets</div>
+    </div>
+    <div class="section">
+      <div class="section-head">
+        <span>Pagina's</span>
+        <svg class="chev" width="10" height="10" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
+      </div>
+      <div class="pages" id="pagesList"></div>
+    </div>
+    <div class="section" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+      <div class="section-head"><span>Lagen</span></div>
+      <div class="layers" id="layersList"></div>
+    </div>
+  </div>
+
+  <!-- CANVAS -->
+  <div class="canvas-wrap" id="canvasWrap">
+    <div id="dot-grid"></div>
+    <div id="canvas"></div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="panel-right" id="rightPanel">
+    <div class="insp-tabs">
+      <div class="insp-tab active">Design</div>
+      <div class="insp-tab">Prototype</div>
+    </div>
+    <div id="inspBody"></div>
+  </div>
+</div>
+
+<!-- ───────── OVERLAYS ───────── -->
+<div class="minimap" id="minimap">
+  <div id="minimapFrames"></div>
+  <div class="minimap-viewport" id="minimapViewport"></div>
+</div>
+
+<div class="zoombar">
+  <button title="Uitzoomen" onclick="zoomBy(0.8)">−</button>
+  <div class="zoom-val" id="zoomDisplay" onclick="resetZoom()">100%</div>
+  <button title="Inzoomen" onclick="zoomBy(1.25)">+</button>
+  <button title="Alles passend (Shift+1)" onclick="fitAll()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+  </button>
+</div>
+
+<div class="kbd-hint">
+  <span><span class="kbd">scroll</span> zoom</span>
+  <span><span class="kbd">sleep</span> pannen</span>
+  <span><span class="kbd">Shift 1</span> passend</span>
+  <span><span class="kbd">⌥ P</span> presenteren</span>
+</div>
+
+<!-- ───────── PRESENT MODE ───────── -->
+<div class="present" id="present">
+  <div class="present-top">
+    <div><span class="pt-name" id="presentName">Cover</span><span class="pt-sub" id="presentPage">Blog canvas</span></div>
+    <div class="pt-right">
+      <span class="present-count" id="presentCount">1 / 1</span>
+      <button class="present-btn" title="Vorige (←)" onclick="presentStep(-1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <button class="present-btn" title="Volgende (→)" onclick="presentStep(1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 5l7 7-7 7"/></svg></button>
+      <button class="present-btn" title="Sluiten (Esc)" onclick="stopPresent()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+  </div>
+  <div class="present-stage" id="presentStage">
+    <div class="present-zone prev" onclick="presentStep(-1)"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5l-7 7 7 7"/></svg></div>
+    <div class="present-frame" id="presentFrame"></div>
+    <div class="present-zone next" onclick="presentStep(1)"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 5l7 7-7 7"/></svg></div>
+    <div class="present-dots" id="presentDots"></div>
+  </div>
+</div>
+
+<!-- ───────── DETAIL PAGE ───────── -->
+<div class="detail" id="detail">
+  <div class="detail-grid"></div>
+  <div class="detail-top">
+    <button class="detail-back" onclick="closeDetail()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg>
+      Terug naar canvas
+    </button>
+    <div class="detail-crumb" id="detailCrumb"></div>
+    <button class="detail-close" onclick="closeDetail()" title="Sluiten (Esc)">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <div class="detail-scroll" id="detailScroll">
+    <div class="dd-frame-label" id="detailLabel"></div>
+    <div class="detail-doc" id="detailDoc"></div>
+  </div>
+</div>
+
+<script>
+/* ───────── PAGES DATA ───────── */
+const PAGES = {
+  blog: { name:'Blog canvas', w:1500, h:1280, frames:[
+    { id:'cover', label:'Cover', x:60, y:60, w:500, h:380, type:'cover',
+      section:'Intro', accentColor:'#a78bfa', bgColor:'#0f0b1e',
+      tag:'// meesterschap blog · 2025–2026', title:'Mitchell\nScholte',
+      sub:'Web Design & Development minor\nHvA CMD · Amsterdam',
+      meta:'sprint 0 · hackathon · weekly nerd · meesterproef' },
+    { id:'sprint0', label:'Sprint 0 — Reflectie', x:620, y:60, w:360, h:380, type:'post',
+      section:'Sprint 0', accentColor:'#f59e0b', bgColor:'#0f0a00', link:'sprint-0.html',
+      tag:'// sprint 0 · feb 2026', title:'De basis\nleggen',
+      body:'Waar begin je als je alles nog moet leren? Sprint 0 is dat eerste moment van oriëntatie — wie ben je als designer-developer, wat wil je halen uit de minor?\n\nMijn plan: elke week iets nieuws proberen, ook als het mislukt.',
+      date:'12 feb 2026', pills:[{l:'reflectie',c:'#f59e0b',b:'#1a1200'},{l:'planning',c:'#f59e0b',b:'#1a1200'}] },
+    { id:'meesterproef', label:'Meesterproef — Intro', x:1040, y:60, w:360, h:760, type:'cover',
+      section:'Meesterproef', accentColor:'#3b82f6', bgColor:'#020c1a', link:'meesterproef.html',
+      tag:'// meesterproef · jun 2026', title:'Groot\nProject',
+      sub:'Het eindproject.\nEen echt team,\neen echte opdrachtgever,\neen echte deadline.',
+      meta:'deadline 19 juni 2026' },
+    { id:'wn1', label:'Weekly Nerd #1 — Vasilis', x:60, y:500, w:340, h:300, type:'post',
+      section:'Weekly Nerd', accentColor:'#8b5cf6', bgColor:'#0f0b1e', link:'weekly-nerd-template.html',
+      tag:'// weekly nerd · sessie 01', title:'Vasilis over\nweird web',
+      body:'Wat als het web niet hoeft te werken zoals verwacht? Vasilis liet zien hoe je het medium zelf kunt bevragen. Geen templates — gewoon de browser en een idee.',
+      date:'feb 2026', pills:[{l:'css',c:'#8b5cf6',b:'#0f0b1e'},{l:'browser',c:'#8b5cf6',b:'#0f0b1e'}] },
+    { id:'hackathon', label:'Hackathon — Verslag', x:460, y:500, w:400, h:300, type:'post',
+      section:'Hackathon', accentColor:'#10b981', bgColor:'#021a0e', link:'hackathon.html',
+      tag:'// hackathon · mrt 2026', title:'Bouwen\nonder druk',
+      body:'Twee dagen, één team, één probleem. Wat we maakten was niet perfect — maar het werkte. We leerden meer in 48 uur dan in weken college.',
+      date:'26 mrt 2026', pills:[{l:'team',c:'#10b981',b:'#021a0e'},{l:'sprint',c:'#10b981',b:'#021a0e'}] },
+    { id:'wn2', label:'Weekly Nerd #2 — Jad', x:60, y:860, w:300, h:280, type:'post',
+      section:'Weekly Nerd', accentColor:'#8b5cf6', bgColor:'#0f0b1e',
+      tag:'// weekly nerd · sessie 02', title:'Jad over\naccessibility',
+      body:'Toegankelijkheid is geen feature — het is de basis. Semantische HTML is meer dan een best practice: het is respect voor je gebruiker.',
+      date:'mrt 2026', pills:[{l:'a11y',c:'#8b5cf6',b:'#0f0b1e'}] },
+    { id:'wn3', label:'Weekly Nerd #3', x:420, y:860, w:260, h:280, type:'wip',
+      section:'Weekly Nerd', accentColor:'#444', bgColor:'#141414', wipLabel:'Nog niet geschreven' },
+    { id:'geek', label:'Weekly Geek →', x:740, y:500, w:240, h:280, type:'wip',
+      section:'Weekly Geek', accentColor:'#f472b6', bgColor:'#1a0a12', wipLabel:'Zie pagina Weekly Geeks' },
+    { id:'gesprek1', label:'Gesprek 1 — Reflectie', x:740, y:840, w:240, h:200, type:'post',
+      section:'Gesprekken', accentColor:'#34d399', bgColor:'#001a0e', link:'gesprekken/gesprek-1.html',
+      tag:'// gesprek 01', title:'Gesprek 1', body:'Reflectie na het eerste begeleidingsgesprek.', date:'2026', pills:[{l:'reflectie',c:'#34d399',b:'#001a0e'}] },
+    { id:'gesprek2', label:'Gesprek 2 — Reflectie', x:740, y:1060, w:240, h:160, type:'post',
+      section:'Gesprekken', accentColor:'#34d399', bgColor:'#001a0e', link:'gesprekken/gesprek-2.html',
+      tag:'// gesprek 02', title:'Gesprek 2', body:'Reflectie na gesprek twee.', date:'2026', pills:[{l:'reflectie',c:'#34d399',b:'#001a0e'}] },
+  ]},
+
+  over: { name:'Over mij', w:1120, h:920, frames:[
+    { id:'about-cover', label:'Over mij', x:60, y:60, w:520, h:440, type:'cover',
+      section:'Profiel', accentColor:'#a78bfa', bgColor:'#0f0b1e',
+      tag:'// over mij', title:'Hoi, ik ben\nMitchell',
+      sub:'CMD-student aan de HvA.\nDesign × code, met een\nvoorliefde voor interactie.',
+      meta:'front-end · interactie · creative development' },
+    { id:'about-who', label:'Wie ben ik', x:620, y:60, w:440, h:280, type:'post',
+      section:'Profiel', accentColor:'#38bdf8', bgColor:'#02101a',
+      tag:'// achtergrond', title:'Wie ben ik?',
+      body:'Ik ben Mitchell Scholte, student Communication & Multimedia Design. In de minor Web Design & Development zoek ik de grens op tussen wat mooi is en wat werkt.\n\nLiefst bouw ik dingen die je voelt, niet alleen ziet.',
+      date:'CMD · HvA', pills:[{l:'cmd',c:'#38bdf8',b:'#02101a'},{l:'amsterdam',c:'#38bdf8',b:'#02101a'}] },
+    { id:'about-do', label:'Wat ik doe', x:620, y:380, w:440, h:280, type:'post',
+      section:'Profiel', accentColor:'#10b981', bgColor:'#02140e',
+      tag:'// skills', title:'Wat ik doe',
+      body:'Front-end development met HTML, CSS en JavaScript. Interactie- en motion design. Steeds vaker ook 3D en data-visualisatie.\n\nIk werk graag iteratief: bouwen, testen, verbeteren.',
+      date:'toolbox', pills:[{l:'html/css',c:'#10b981',b:'#02140e'},{l:'js',c:'#10b981',b:'#02140e'},{l:'three.js',c:'#10b981',b:'#02140e'}] },
+    { id:'about-drive', label:'Wat mij drijft', x:60, y:540, w:520, h:300, type:'post',
+      section:'Profiel', accentColor:'#f59e0b', bgColor:'#140d00',
+      tag:'// motivatie', title:'Wat mij drijft',
+      body:'Het web is een medium dat je kunt buigen. Ik wil weten hoe ver dat gaat — animatie, gamification, dingen die verrassen.\n\nDeze blog is mijn logboek: elke week iets nieuws, ook als het mislukt. Falen hoort erbij.',
+      date:'doel van de minor', pills:[{l:'interactie',c:'#f59e0b',b:'#140d00'},{l:'experiment',c:'#f59e0b',b:'#140d00'}] },
+  ]},
+
+  vakken: { name:'Vakken & Projecten', w:1840, h:700, frames:[
+    { id:'vak-cover', label:'Overzicht', x:60, y:60, w:300, h:570, type:'cover',
+      section:'Minor WDD', accentColor:'#a78bfa', bgColor:'#0f0b1e',
+      tag:'// minor wdd', title:'Vakken\n&\nProjecten',
+      sub:'Vier vakken die\nhet web uitpluizen,\ndrie projecten\nwaarin het samenkomt.',
+      meta:'css · browser · hcd · api' },
+
+    /* ───── VAKKEN (2×2) ───── */
+    { id:'vak-css', label:'CSS to the Rescue', x:400, y:60, w:320, h:270, type:'post',
+      section:'Vakken', accentColor:'#38bdf8', bgColor:'#02101a',
+      tag:'// vak 01', title:'CSS to\nthe Rescue',
+      body:'Problemen oplossen met alleen CSS — geen JavaScript. Leren hoe krachtig en creatief het platform zelf is.',
+      date:'nieuwe inzichten', pills:[{l:'css',c:'#38bdf8',b:'#02101a'},{l:'no-js',c:'#38bdf8',b:'#02101a'}],
+      detail:{ meta:[{k:'Vak',v:'CSS to the Rescue'},{k:'Thema',v:'Alles met CSS'}],
+        intro:'De uitdaging: los interactie en layout op zonder ook maar één regel JavaScript. CSS bleek veel meer te kunnen dan ik dacht.',
+        sections:[
+          {h:'Wat ik deed', p:'Werken met moderne CSS — grid, custom properties, :has(), en pseudo-elementen voor interactie die normaal in JS zou zitten.'},
+          {h:'Nieuwe inzichten', p:'✎ Vul hier je eigen reflectie aan.'},
+        ]}},
+    { id:'vak-browser', label:'Browser Technologies', x:740, y:60, w:320, h:270, type:'post',
+      section:'Vakken', accentColor:'#f59e0b', bgColor:'#140d00',
+      tag:'// vak 02', title:'Browser\nTechnologies',
+      body:'JavaScript, APIs en hoe de browser écht werkt. Van fetch tot de event loop — onder de motorkap kijken.',
+      date:'nieuwe inzichten', pills:[{l:'javascript',c:'#f59e0b',b:'#140d00'},{l:'apis',c:'#f59e0b',b:'#140d00'}],
+      detail:{ meta:[{k:'Vak',v:'Browser Technologies'},{k:'Thema',v:'JavaScript & de browser'}],
+        intro:'Dit vak ging over wat er écht gebeurt als je een pagina opent. Geen frameworks — gewoon de browser, JavaScript en de API\'s die het platform je geeft.',
+        sections:[
+          {h:'Wat ik deed', p:'Werken met de DOM, data ophalen met fetch en async/await, en de event loop leren begrijpen. Dingen die "vanzelf" leken te werken, vielen ineens op hun plek.'},
+          {h:'Nieuwe inzichten', p:'✎ Vul hier je eigen reflectie aan: wat verraste je, wat ging mis, wat neem je mee?'},
+        ]}},
+    { id:'vak-hcd', label:'HCD — VoiceReader', x:400, y:360, w:320, h:270, type:'post',
+      section:'Vakken', accentColor:'#34d399', bgColor:'#001a0e',
+      tag:'// vak 03 · hcd', title:'Human\nCentered Design',
+      body:'De gebruiker centraal. Mijn project: VoiceReader — een Chrome-extensie die een screenreader emotionele, genrebewuste stemmen geeft, ontworpen samen met een blinde gebruiker.',
+      date:'project: voicereader', pills:[{l:'voicereader',c:'#34d399',b:'#001a0e'},{l:'a11y',c:'#34d399',b:'#001a0e'},{l:'ai',c:'#34d399',b:'#001a0e'}],
+      detail:{ meta:[{k:'Vak',v:'Human Centered Design'},{k:'Project',v:'VoiceReader'},{k:'Type',v:'Chrome-extensie'},{k:'Getest met',v:'Ihab (blind) · 4 weken'},{k:'AI',v:'ElevenLabs · Gemini'}],
+        intro:'VoiceReader is een Chrome-extensie gebouwd rond de behoeften van één echte gebruiker: Ihab is blind en gebruikt de hele dag een screenreader. Zijn grootste frustratie was niet de snelheid, maar de vlakke, emotieloze stem. VoiceReader detecteert met AI het genre van een pagina en leest die voor in een bijpassende, emotionele stem.',
+        sections:[
+          {h:'De gebruiker centraal', p:'Het hele ontwerp is samen met Ihab tot stand gekomen — een blinde hoofdgebruiker. Vier weken lang testen op mijn eigen laptop, met stemstijlen afgestemd op zijn interesses. Niet ontwerpen vóór, maar mét.'},
+          {h:'Hoe het werkt', p:'AI bepaalt het genre van een pagina; ElevenLabs TTS leest die voor met één stem per genre en stijl. Zo krijgt een verhaal een andere voordracht dan een nieuwsartikel.'},
+          {h:'De techniek', p:'De eerste test met Ihab leidde tot genre-detectie via Claude. Toen Claudes credits op waren ben ik overgestapt naar Google Gemini en heb ik alles teruggebracht naar de extensie zelf.'},
+          {h:'Wat ik leerde', p:'HCD is ontwerpen mét je gebruiker, niet voor een aanname. Verder technisch: Gemini\'s REST-API gebruikt camelCase en de modelnaam verschilt per API-versie, dus auto-discovery van het model scheelt gedoe. En een echte accessibility-first interface bouwen is iets anders dan "toegankelijk genoeg".'},
+        ]}},
+    { id:'vak-api', label:'API — CMD Casino', x:740, y:360, w:320, h:270, type:'post',
+      section:'Vakken', accentColor:'#fbbf24', bgColor:'#1a1203',
+      tag:'// vak 04 · api', title:'API',
+      body:'Data ophalen, verwerken en tonen via API\'s. Mijn project werd CMD Casino: een full-stack multiplayer casino in Astro.',
+      date:'project: cmd casino', pills:[{l:'websockets',c:'#fbbf24',b:'#1a1203'},{l:'mollie api',c:'#fbbf24',b:'#1a1203'},{l:'wikipedia api',c:'#fbbf24',b:'#1a1203'}],
+      detail:{ meta:[{k:'Vak',v:'API'},{k:'Project',v:'CMD Casino'},{k:'Stack',v:'Astro · Node.js · MongoDB'},{k:'Realtime',v:'WebSockets'},{k:'Betalingen',v:'Mollie (iDEAL)'},{k:'Hosting',v:'Render'}],
+        intro:'Voor het API-vak bouwde ik CMD Casino: een full-stack multiplayer casino. Spelers maken een account aan, verdienen credits en spelen real-time Blackjack tegen elkaar. API-gedreven in Astro met één content-API en twee web-API\'s, gedeployed op Render.',
+        sections:[
+          {h:'De API\'s', p:'Een content-API serveert de in-game spelregelpagina\'s, gevoed door de Wikipedia-API. De Mollie-API regelt iDEAL-betalingen: Mollie bevestigt een betaling door een webhook op mijn server aan te roepen.'},
+          {h:'Real-time multiplayer', p:'Via WebSockets spelen meerdere mensen aan dezelfde Blackjack-tafel, live. Een pratende dealer maakt de tafel af.'},
+          {h:'Server-authoritative & anti-cheat', p:'Alle spellogica draait op de server, niet in de browser. Daardoor kan een speler de kaarten niet manipuleren — de client vraagt alleen, de server beslist.'},
+          {h:'Wat ik leerde', p:'Wikipedia-artikelen zijn enorm en vol ruis, dus ik cache ze en roep de API nooit twee keer aan voor hetzelfde artikel. Verder: webhooks afhandelen, consistent camelCase aanhouden zoals de API doet, en deployen op Render. API-kosten zijn een echte drempel — caching is dan niet luxe maar noodzaak.'},
+        ]}},
+
+    /* ───── PROJECTEN (kolom) ───── */
+    { id:'proj-sprint0', label:'Sprint 0', x:1100, y:60, w:320, h:270, type:'post',
+      section:'Projecten', accentColor:'#f59e0b', bgColor:'#140d00',
+      tag:'// project · feb 2026', title:'Sprint 0',
+      body:'De introductie-opdracht: in 9 dagen een one-page website over jezelf. Ik koos voor 3D met Three.js — en eindigde met een interactief Monopoly-bord over mijn leven.',
+      date:'3–11 feb 2026', pills:[{l:'three.js',c:'#f59e0b',b:'#140d00'},{l:'webgl',c:'#f59e0b',b:'#140d00'},{l:'3d',c:'#f59e0b',b:'#140d00'}],
+      detail:{ meta:[{k:'Opdracht',v:'Website over jezelf'},{k:'Periode',v:'3–11 feb 2026'},{k:'Technieken',v:'Three.js · WebGL'}],
+        intro:'De introductie-opdracht: maak in 9 dagen een one-page website over jezelf, met je leerdoelen erin. Ik wilde iets nieuws leren en koos voor 3D — Three.js en WebGL. Wat begon als een 3D-portfolio werd uiteindelijk een interactief Monopoly-speelbord over mijn leven.',
+        sections:[
+          {h:'Het 3D-portfolio', p:'Three.js leren door te doen: .glb-modellen van Sketchfab en Poly, en leren werken met camera, lichten, canvas en het comprimeren van modellen. Daarna interactie op scroll — een tennisracket dat een slag maakt en een auto die het scherm in rijdt met draaiende wielen. Veel wiskunde, want het draaipunt van het racket zat in het midden in plaats van aan het uiteinde.'},
+          {h:'De pivot naar Monopoly', p:'Een nieuw concept: een speelbord waarbij de straten thema\'s uit mijn leven zijn — sport, studie, hobby, games, muziek. Met 3D-dobbelstenen, een lopende pion en speelkaarten die hun inhoud uit een eigen API halen.'},
+          {h:'Wat ik leerde', p:'De GLTFLoader gaf de hele dag 404\'s, dus ben ik teruggevallen op simpele Three.js-vormen — niet blijven hangen, doorbouwen. Het eureka-moment: niet het bord draaien bij een bocht, maar de camera. En ik bouwde een eigen API van ~260 regels toen die van de opleiding nergens te vinden was. Leerdoelen: ontwerpen met 3D, betere animaties met wow-factor, en interactie waarbij de gebruiker voelt dat híj de site bestuurt.'},
+        ]}},
+    { id:'proj-hackathon', label:'Hackathon', x:1100, y:360, w:320, h:270, type:'post',
+      section:'Projecten', accentColor:'#10b981', bgColor:'#021a0e',
+      tag:'// project · mrt 2026', title:'Hackathon',
+      body:'Twee dagen, één team, één probleem. Bouwen onder druk — en in 48 uur meer leren dan in weken college.',
+      date:'26 mrt 2026', pills:[{l:'team',c:'#10b981',b:'#021a0e'},{l:'48 uur',c:'#10b981',b:'#021a0e'}],
+      detail:{ meta:[{k:'Type',v:'Teamproject'},{k:'Duur',v:'48 uur'},{k:'Periode',v:'mrt 2026'}],
+        intro:'Een intensieve sprint van twee dagen: met een team van scratch naar een werkend prototype.',
+        sections:[
+          {h:'Wat we maakten', p:'✎ Beschrijf hier het probleem, jullie oplossing en jouw rol in het team.'},
+          {h:'Wat ik leerde', p:'✎ Wat nam je mee uit het werken onder druk?'},
+        ]}},
+    { id:'proj-meester', label:'Meesterproef', x:1460, y:60, w:320, h:570, type:'post',
+      section:'Projecten', accentColor:'#3b82f6', bgColor:'#020c1a',
+      tag:'// project · jun 2026', title:'Meester\nproef',
+      body:'Het eindproject waarin alles samenkomt: een echt team, een echte opdrachtgever en een echte deadline.\n\nAlles uit de vakken — CSS, browser, HCD en API\'s — komt hier bij elkaar in één echt product.\n\nDe finale van de minor.',
+      date:'deadline 19 jun 2026', pills:[{l:'eindproject',c:'#3b82f6',b:'#020c1a'},{l:'team',c:'#3b82f6',b:'#020c1a'}],
+      detail:{ meta:[{k:'Type',v:'Eindproject'},{k:'Deadline',v:'19 juni 2026'}],
+        intro:'De afsluiting van de minor: alles wat je geleerd hebt samenbrengen in één project, met een echt team en een echte opdrachtgever.',
+        sections:[
+          {h:'Waar het over gaat', p:'✎ Vul hier aan zodra je project loopt: opdrachtgever, vraagstuk en jouw rol in het team.'},
+          {h:'Wat ik wil bereiken', p:'✎ Jouw doelen voor de meesterproef.'},
+        ]}},
+  ]},
+
+  geeks: { name:'Weekly Geeks', w:1500, h:900, frames:[
+    { id:'geek-cover', label:'Weekly Geeks', x:60, y:60, w:340, h:760, type:'cover',
+      section:'Weekly Geek', accentColor:'#f472b6', bgColor:'#1a0a12',
+      tag:'// weekly geek · 8 talks', title:'Weekly\nGeeks',
+      sub:'Acht sprekers,\nacht perspectieven\nop het web.\nKorte notities per talk.',
+      meta:'doorlopend · elke week een nieuwe' },
+    { id:'g-powell', label:'Kevin Powell', x:440, y:60, w:320, h:240, type:'post',
+      section:'Talks', accentColor:'#38bdf8', bgColor:'#02101a',
+      tag:'// talk 01', title:'Kevin Powell',
+      body:'De CSS-goeroe over moderne layout: grid, container queries en :has(). CSS kan veel meer dan je denkt.',
+      date:'css', pills:[{l:'css',c:'#38bdf8',b:'#02101a'}] },
+    { id:'g-bremer', label:'Nadieh Bremer', x:780, y:60, w:320, h:240, type:'post',
+      section:'Talks', accentColor:'#a78bfa', bgColor:'#0f0b1e',
+      tag:'// talk 02', title:'Nadieh Bremer',
+      body:'Data-visualisatie als kunst. Hoe je van saaie cijfers iets maakt dat mensen wíllen bekijken.',
+      date:'data viz', pills:[{l:'dataviz',c:'#a78bfa',b:'#0f0b1e'}] },
+    { id:'g-valkhof', label:'Killian Valkhof', x:1120, y:60, w:320, h:240, type:'post',
+      section:'Talks', accentColor:'#10b981', bgColor:'#02140e',
+      tag:'// talk 03', title:'Killian Valkhof',
+      body:'De maker van Polypane over tools bouwen voor developers en hoe browsers beter kunnen.',
+      date:'tooling', pills:[{l:'browsers',c:'#10b981',b:'#02140e'}] },
+    { id:'g-ppk', label:'Peter-Paul Koch', x:440, y:340, w:320, h:240, type:'post',
+      section:'Talks', accentColor:'#f59e0b', bgColor:'#140d00',
+      tag:'// talk 04', title:'Peter-Paul Koch',
+      body:'De man achter QuirksMode over browser-compatibiliteit en de eigenwijsheid van het mobiele web.',
+      date:'compat', pills:[{l:'browser',c:'#f59e0b',b:'#140d00'}] },
+    { id:'g-binder', label:'Nils Binder', x:780, y:340, w:320, h:240, type:'post',
+      section:'Talks', accentColor:'#f472b6', bgColor:'#1a0a12',
+      tag:'// talk 05', title:'Nils Binder',
+      body:'Creative coding en generatieve vormen. Code als penseel om beweging en toeval te ontwerpen.',
+      date:'creative dev', pills:[{l:'generative',c:'#f472b6',b:'#1a0a12'}] },
+    { id:'g-leenheen', label:'Niels Leenheen', x:1120, y:340, w:320, h:240, type:'post',
+      section:'Talks', accentColor:'#fb7185', bgColor:'#1a0808',
+      tag:'// talk 06', title:'Niels Leenheen',
+      body:'JavaScript tot het uiterste duwen — performance, hacks en wat de taal écht kan.',
+      date:'javascript', pills:[{l:'js',c:'#fb7185',b:'#1a0808'}] },
+    { id:'g-broersma', label:'Robert Broersma', x:440, y:620, w:320, h:200, type:'post',
+      section:'Talks', accentColor:'#34d399', bgColor:'#001a0e',
+      tag:'// talk 07', title:'Robert Broersma',
+      body:'Creative front-end en CSS-art: tekenen met niks anders dan stylesheets.',
+      date:'css art', pills:[{l:'css',c:'#34d399',b:'#001a0e'}] },
+    { id:'g-huijkman', label:'John Huijkman', x:780, y:620, w:320, h:200, type:'post',
+      section:'Talks', accentColor:'#818cf8', bgColor:'#0a0b1a',
+      tag:'// talk 08', title:'John Huijkman',
+      body:'Design systemen in de praktijk: consistentie schaalbaar maken binnen een team.',
+      date:'design systems', pills:[{l:'systems',c:'#818cf8',b:'#0a0b1a'}] },
+  ]},
+
+  leerdoelen: { name:'Leerdoelen', w:1340, h:620, frames:[
+    { id:'ld-begin', label:'Leerdoelen — Begin', x:60, y:60, w:380, h:480, type:'goals',
+      section:'Begin', accentColor:'#f59e0b', bgColor:'#140d00',
+      tag:'// minor wdd · het begin', title:'Begin',
+      goals:[
+        { t:'Interactie', d:'Mijn websites interactiever maken — 3D, scroll-animaties, gamification.', s:'Voltooid', sc:'#10b981' },
+        { t:'UX', d:'Gebruiksvriendelijkere interfaces zodat gebruikers niet vastlopen.', s:'Bezig', sc:'#f59e0b' },
+        { t:'Samenwerken', d:'Mijn ideeën duidelijker overbrengen, zodat ik beter samenwerk.', s:'Bezig', sc:'#f59e0b' },
+      ]},
+    { id:'ld-midden', label:'Leerdoelen — Midden', x:480, y:60, w:380, h:480, type:'goals',
+      section:'Midden', accentColor:'#38bdf8', bgColor:'#02101a',
+      tag:'// minor wdd · halverwege', title:'Midden',
+      goals:[
+        { t:'Interactie', d:'Eerste scroll-animaties werken; nu verdiepen in WebGL / Three.js.', s:'Bezig', sc:'#38bdf8' },
+        { t:'UX', d:'Usability-tests gedaan bij HCD en de inzichten toegepast.', s:'Bezig', sc:'#38bdf8' },
+        { t:'Samenwerken', d:'De hackathon liet zien waar mijn communicatie scherper kan.', s:'Bezig', sc:'#38bdf8' },
+      ]},
+    { id:'ld-eind', label:'Leerdoelen — Eind', x:900, y:60, w:380, h:480, type:'goals',
+      section:'Eind', accentColor:'#34d399', bgColor:'#001a0e',
+      tag:'// minor wdd · het einde', title:'Eind',
+      goals:[
+        { t:'Datavisualisatie', d:'Data visueel aantrekkelijk weergeven voor snellere inzichten.', s:'In progress', sc:'#34d399' },
+        { t:'UX', d:'Gebruiksvriendelijkere interfaces maken zodat gebruikers het maximale halen.', s:'In progress', sc:'#34d399' },
+        { t:'Samenwerken', d:'Ideeën helder verwoorden om beter in een team te functioneren.', s:'In progress', sc:'#34d399' },
+      ]},
+  ]},
+};
+
+const SUBTITLES = {
+  blog:'meesterschap / blog — hva cmd', over:'profiel & motivatie',
+  vakken:'minor wdd — vakken', geeks:'8 talks', leerdoelen:'begin · midden · eind'
+};
+
+let currentPage = 'blog';
+let frames = PAGES[currentPage].frames;
+let TOTAL_W = PAGES[currentPage].w, TOTAL_H = PAGES[currentPage].h;
+
+let camX = 0, camY = 0, zoom = 0.78;
+let isPanning = false, panStart = {x:0,y:0}, camStart = {x:0,y:0};
+let tool = 'move', selectedId = null;
+const canvasEl = document.getElementById('canvas');
+const wrap = document.getElementById('canvasWrap');
+
+const ICON_FRAME = '<svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg>';
+
+/* ───────── Frame content ───────── */
+function frameInnerHTML(f) {
+  if (f.type === 'cover') {
+    return `<div class="fc-cover">
+      <div class="fc-cover-glow" style="background:radial-gradient(ellipse at 20% 80%,${f.accentColor}33 0%,transparent 65%)"></div>
+      <div class="fc-cover-tag" style="color:${f.accentColor}">${f.tag}</div>
+      <div class="fc-cover-title" style="font-size:${f.w>400?44:24}px;color:${f.accentColor}">${f.title.replace(/\n/g,'<br>')}</div>
+      <div class="fc-cover-sub">${f.sub.replace(/\n/g,'<br>')}</div>
+      <div class="fc-cover-meta">${f.meta}</div></div>`;
+  }
+  if (f.type === 'post') {
+    return `<div class="fc-post">
+      <div class="fc-post-tag" style="color:${f.accentColor}">${f.tag}</div>
+      <div class="fc-post-title">${f.title.replace(/\n/g,'<br>')}</div>
+      <div class="fc-post-body">${f.body.replace(/\n/g,'<br><br>')}</div>
+      <div class="fc-post-footer">
+        <div class="fc-post-date">${f.date}</div>
+        <div class="fc-post-tags">${(f.pills||[]).map(p=>`<span class="fc-pill" style="color:${p.c};border-color:${p.c}44;background:${p.b}">${p.l}</span>`).join('')}</div>
+      </div></div>`;
+  }
+  if (f.type === 'goals') {
+    return `<div class="fc-goals">
+      <div class="fc-post-tag" style="color:${f.accentColor}">${f.tag}</div>
+      <div class="fc-goals-title" style="color:${f.accentColor}">${f.title}</div>
+      <div class="goal-list">${f.goals.map(g=>`
+        <div class="goal" style="border-left-color:${f.accentColor}">
+          <div class="goal-top"><span class="goal-name">${g.t}</span><span class="goal-status" style="color:${g.sc};background:${g.sc}1f">${g.s}</span></div>
+          <div class="goal-text">${g.d}</div>
+        </div>`).join('')}</div></div>`;
+  }
+  return `<div class="fc-wip"><div class="fc-wip-icon">⬚</div><div class="fc-wip-text">${f.wipLabel}</div></div>`;
+}
+
+/* ───────── Build canvas ───────── */
+function buildCanvas() {
+  canvasEl.innerHTML = '';
+  canvasEl.style.width = TOTAL_W + 'px';
+  canvasEl.style.height = TOTAL_H + 'px';
+
+  const sections = {};
+  frames.forEach(f => {
+    if (!sections[f.section]) sections[f.section] = {x:f.x, y:f.y};
+    else { sections[f.section].x = Math.min(sections[f.section].x, f.x); sections[f.section].y = Math.min(sections[f.section].y, f.y); }
+  });
+  Object.entries(sections).forEach(([name, pos]) => {
+    const lbl = document.createElement('div');
+    lbl.className = 'section-label';
+    lbl.style.cssText = `left:${pos.x}px;top:${pos.y - 36}px`;
+    lbl.textContent = '// ' + name.toLowerCase();
+    canvasEl.appendChild(lbl);
+  });
+
+  frames.forEach(f => {
+    const el = document.createElement('div');
+    el.className = 'frame'; el.id = 'frame-' + f.id;
+    el.style.cssText = `left:${f.x}px;top:${f.y}px;width:${f.w}px;height:${f.h}px`;
+    const lbl = document.createElement('div');
+    lbl.className = 'frame-label'; lbl.textContent = f.label;
+    el.appendChild(lbl);
+    const inner = document.createElement('div');
+    inner.className = 'frame-inner';
+    inner.style.background = f.bgColor;
+    if (f.type === 'wip') inner.style.border = `1px dashed ${f.accentColor}44`;
+    inner.innerHTML = frameInnerHTML(f);
+    el.appendChild(inner);
+    el.addEventListener('click', e => { e.stopPropagation(); selectFrame(f.id); });
+    el.addEventListener('dblclick', e => {
+      e.stopPropagation();
+      if (f.detail) openDetail(f);
+      else if (f.link) window.open(f.link, '_blank');
+    });
+    canvasEl.appendChild(el);
+  });
+
+  buildLayers();
+  buildMinimap();
+}
+
+function buildLayers() {
+  const list = document.getElementById('layersList');
+  list.innerHTML = '';
+  [...frames].reverse().forEach(f => {
+    const item = document.createElement('div');
+    item.className = 'layer-row'; item.id = 'layer-' + f.id;
+    item.innerHTML = `${ICON_FRAME}<span class="l-name">${f.label}</span>
+      <svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg>`;
+    item.addEventListener('click', () => { selectFrame(f.id); flyToFrame(f.id); });
+    list.appendChild(item);
+  });
+}
+
+function buildPagesList() {
+  const list = document.getElementById('pagesList');
+  list.innerHTML = '';
+  Object.entries(PAGES).forEach(([key, pg]) => {
+    const row = document.createElement('div');
+    row.className = 'page-row' + (key===currentPage ? ' active' : '');
+    row.innerHTML = `<svg class="page-check" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6.5L5 9.5 10 3"/></svg>${pg.name}`;
+    row.addEventListener('click', () => switchPage(key));
+    list.appendChild(row);
+  });
+}
+
+function switchPage(key) {
+  if (!PAGES[key]) return;
+  currentPage = key;
+  frames = PAGES[key].frames;
+  TOTAL_W = PAGES[key].w; TOTAL_H = PAGES[key].h;
+  selectedId = null;
+  document.getElementById('fileName').textContent = 'Mitchell Scholte — ' + PAGES[key].name;
+  buildPagesList();
+  buildCanvas();
+  showPageProps();
+  fitAll();
+}
+
+function buildMinimap() {
+  const mm = document.getElementById('minimapFrames');
+  mm.innerHTML = '';
+  const mmW = 150, mmH = 96;
+  const sx = mmW / TOTAL_W, sy = mmH / TOTAL_H;
+  frames.forEach(f => {
+    const el = document.createElement('div');
+    el.className = 'minimap-frame';
+    el.style.cssText = `left:${f.x*sx}px;top:${f.y*sy}px;width:${f.w*sx}px;height:${f.h*sy}px;background:${f.accentColor}33;border:0.5px solid ${f.accentColor}66`;
+    mm.appendChild(el);
+  });
+}
+
+function selectFrame(id) {
+  selectedId = id;
+  document.querySelectorAll('.frame').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.layer-row').forEach(el => el.classList.remove('selected'));
+  if (id) {
+    document.getElementById('frame-'+id)?.classList.add('selected');
+    document.getElementById('layer-'+id)?.classList.add('selected');
+    showProps(frames.find(fr => fr.id === id));
+  } else {
+    showPageProps();
+  }
+}
+
+function showPageProps() {
+  document.getElementById('inspBody').innerHTML = `
+    <div class="insp-section">
+      <div class="insp-title">Pagina · ${PAGES[currentPage].name} <span class="add">···</span></div>
+      <div class="color-row">
+        <div class="swatch" style="background:#1e1e1e"></div>
+        <span class="color-hex">1E1E1E</span>
+        <span class="color-op">100%</span>
+        <svg class="color-eye" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg>
       </div>
     </div>
-    <div class="slider__right">
-      <div class="slider__images"></div>
+    <div class="insp-section">
+      <div class="insp-title">Presenteren</div>
+      <button class="export-btn primary" onclick="startPresent()">▶ Start presentatie</button>
+    </div>`;
+}
+
+function showProps(f) {
+  const linkBtn = f.detail
+    ? `<button class="export-btn primary" onclick="openDetail(frames.find(fr=>fr.id==='${f.id}'))">↗ Open detailpagina</button>`
+    : f.link
+    ? `<button class="export-btn primary" onclick="window.open('${f.link}','_blank')">↗ Open artikel</button>`
+    : `<button class="export-btn" onclick="flyToFrame('${f.id}')">Zoom naar frame</button>`;
+  document.getElementById('inspBody').innerHTML = `
+    <div class="align-row">
+      ${['M3 4v16','M4 3h16','M21 4v16','M3 4v16M21 4v16','M4 3h16M4 21h16','M3 4v16M12 4v16M21 4v16']
+        .map(d=>`<div class="align-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="${d}"/></svg></div>`).join('')}
     </div>
-  </div>
-
-</section>
-
-    <!-- === LEERDOELEN === -->
-    <section class="goals-section">
-        <div class="goals-header">
-            <span class="goals-eyebrow">Minor WDD · 2026</span>
-            <h2 class="goals-title">Drie leerdoelen voor<br><em>het begin</em></h2>
-        </div>
-        <div class="goals-grid">
-            <div class="goal-card goal-card--warm">
-                <div class="goal-card-stat">Interactie</div>
-                <div class="goal-card-body">
-                    <p>Ik wil leeren om mijn websites interactiever te maken. Door bijv. 3D modellen, onScroll animaties of gamification toe te passen</p>
-                </div>
-                <span class="goal-card-tag">Voltooid</span>
-            </div>
-            <div class="goal-card goal-card--dark">
-                <div class="goal-card-stat">UX</div>
-                <div class="goal-card-body">
-                    <p>Ik wil leren om gebruiksvriendelijkere interfaces te maken, zodat gebruikers minder vast lopen bij mijn applicaties of niet het maximale uit de website kunnen halen wegens onduidelijkheid.</p>
-                </div>
-                <span class="goal-card-tag">!Voltooid</span>
-            </div>
-            <div class="goal-card goal-card--sage">
-                <div class="goal-card-stat">Samenwerken</div>
-                <div class="goal-card-body">
-                    <p>Ik wil graag leren om mijn ideeen beter over te brengen, door duidelijke verwoording, zodat ik beter kan samenwerken en niet teveel zelf ga doen.</p>
-                </div>
-                <span class="goal-card-tag">!Voltooid</span>
-            </div>
-        </div>
-    </section>
-
-        <!-- === LEERDOELEN === -->
-    <section class="goals-section">
-        <div class="goals-header">
-            <span class="goals-eyebrow">Minor WDD · 2026</span>
-            <h2 class="goals-title">Drie leerdoelen voor<br><em>het einde</em></h2>
-        </div>
-        <div class="goals-grid">
-            <div class="goal-card goal-card--warm">
-                <div class="goal-card-stat">Datavis.</div>
-                <div class="goal-card-body">
-                    <p>Ik wil leren om data op een visueel aantrekkelijke manier weer te geven, zodat gebruikers sneller inzichten kunnen krijgen.</p>
-                </div>
-                <span class="goal-card-tag">In progress</span>
-            </div>
-            <div class="goal-card goal-card--dark">
-                <div class="goal-card-stat">UX</div>
-                <div class="goal-card-body">
-                    <p>Ik wil leren om gebruiksvriendelijkere interfaces te maken, zodat gebruikers minder vast lopen bij mijn applicaties of niet het maximale uit de website kunnen halen wegens onduidelijkheid.</p>
-                </div>
-                <span class="goal-card-tag">In progress</span>
-            </div>
-            <div class="goal-card goal-card--sage">
-                <div class="goal-card-stat">Samenwerken</div>
-                <div class="goal-card-body">
-                    <p>Ik wil graag leren om mijn ideeen beter over te brengen, door duidelijke verwoording, zodat ik beter kan samenwerken en niet teveel zelf ga doen.</p>
-                </div>
-                <span class="goal-card-tag">In progress</span>
-            </div>
-        </div>
-    </section>
-
-<section class="weekly-geek-carousel" id="scroll-section">
-    <div class="weekly-geek-header">
-        <h2>Weekly <em>Geek</em></h2>
-        <p>8 talks</p>
+    <div class="insp-section">
+      <div class="insp-title">Positie</div>
+      <div class="field-grid">
+        <div class="field"><span class="f-key">X</span><span class="f-val">${f.x}</span></div>
+        <div class="field"><span class="f-key">Y</span><span class="f-val">${f.y}</span></div>
+        <div class="field"><span class="f-key">W</span><span class="f-val">${f.w}</span></div>
+        <div class="field"><span class="f-key">H</span><span class="f-val">${f.h}</span></div>
+        <div class="field"><span class="f-key">∠</span><span class="f-val">0°</span></div>
+        <div class="field"><span class="f-key">◠</span><span class="f-val">${f.type==='wip'?0:4}</span></div>
+      </div>
     </div>
-        <div class="carousel">
-	<div class="carousel-item">
-		<div class="carousel-box">
-			<div class="num">01</div>
-			<img src="weekly_geeks/killian-valkhof.png" />
-			<div class="speaker-info">
-				<div class="title">Killian Valkhof</div>
-				<div class="speaker-bio">
-					<p>Killian Valkhof is de maker van Polypane, een browser gemaakt voor responsive webontwikkeling en design. Hij starte al een zijn eerste webbureau op zijn 16e en dat voordat hij Polypane lanceerde.</p>
-				</div>
-			</div>
-		</div>
-	</div>
+    <div class="insp-section">
+      <div class="insp-title">Weergave</div>
+      <div class="field-grid">
+        <div class="field"><span class="f-key">◑</span><span class="f-val">100%</span></div>
+        <div class="field"><span class="f-key">▦</span><span class="f-val">Doorgeven</span></div>
+      </div>
+    </div>
+    <div class="insp-section">
+      <div class="insp-title">Vulling <span class="add">+</span></div>
+      <div class="color-row">
+        <div class="swatch" style="background:${f.bgColor}"></div>
+        <span class="color-hex">${f.bgColor.replace('#','')}</span>
+        <span class="color-op">100%</span>
+        <svg class="color-eye" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg>
+      </div>
+    </div>
+    <div class="insp-section">
+      <div class="insp-title">Selectiekleuren</div>
+      <div class="color-row">
+        <div class="swatch" style="background:${f.accentColor}"></div>
+        <span class="color-hex">${f.accentColor.replace('#','')}</span>
+        <span class="color-op">100%</span>
+      </div>
+    </div>
+    <div class="insp-section">
+      <div class="insp-title">Acties <span class="add">+</span></div>
+      ${linkBtn}
+    </div>`;
+}
 
-	<div class="carousel-item">
-		<div class="carousel-box">
-			<div class="num">02</div>
-			<img src="weekly_geeks/peter-paul-koch.png" />
-			<div class="speaker-info">
-				<div class="title">Peter Paul Koch</div>
-				<div class="speaker-bio">
-					<p>Peter Paul Koch gaf een duidelijke uitleg over hoe het werk begon en werkt. Verder was zijn rol in de begin van het internet tijdperk erg inspirerend. Ik vond dat hij ons een geschiedenis les kregen die we zeker nodig hebben om de toekomst te creeren</p>
-				</div>
-			</div>
-		</div>
-	</div>
+/* ───────── Camera ───────── */
+function flyToFrame(id) {
+  const f = frames.find(fr => fr.id === id);
+  if (!f) return;
+  const ww = wrap.clientWidth, wh = wrap.clientHeight;
+  const tz = Math.min(ww/(f.w+120), wh/(f.h+120), 1.4);
+  animateTo(ww/2-(f.x+f.w/2)*tz, wh/2-(f.y+f.h/2)*tz, tz);
+}
+function animateTo(tx,ty,tz) {
+  const sx=camX, sy=camY, sz=zoom, dur=380, start=performance.now();
+  function step(now) {
+    const t=Math.min((now-start)/dur,1), e=t<0.5?2*t*t:-1+(4-2*t)*t;
+    camX=sx+(tx-sx)*e; camY=sy+(ty-sy)*e; zoom=sz+(tz-sz)*e;
+    applyTransform(); if(t<1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+function applyTransform() {
+  canvasEl.style.transform = `translate(${camX}px,${camY}px) scale(${zoom})`;
+  document.getElementById('zoomDisplay').textContent = Math.round(zoom*100)+'%';
+  const sz = 24*zoom;
+  const dg = document.getElementById('dot-grid');
+  dg.style.backgroundSize = `${sz}px ${sz}px`;
+  dg.style.backgroundPosition = `${camX%sz}px ${camY%sz}px`;
+  updateMinimap();
+}
+function updateMinimap() {
+  const vp = document.getElementById('minimapViewport');
+  const mmW=150, mmH=96, sx=mmW/TOTAL_W, sy=mmH/TOTAL_H;
+  const vw=wrap.clientWidth/zoom, vh=wrap.clientHeight/zoom;
+  const ox=-camX/zoom, oy=-camY/zoom;
+  vp.style.left=Math.max(0,Math.min(mmW-2,ox*sx))+'px';
+  vp.style.top=Math.max(0,Math.min(mmH-2,oy*sy))+'px';
+  vp.style.width=Math.min(mmW,vw*sx)+'px';
+  vp.style.height=Math.min(mmH,vh*sy)+'px';
+}
+function fitAll() {
+  const ww=wrap.clientWidth, wh=wrap.clientHeight, pad=60;
+  const tz=Math.min((ww-pad*2)/TOTAL_W,(wh-pad*2)/TOTAL_H);
+  animateTo(ww/2-(TOTAL_W/2)*tz, wh/2-(TOTAL_H/2)*tz, tz);
+}
+function resetZoom() { animateTo(wrap.clientWidth/2-TOTAL_W/2, wrap.clientHeight/2-TOTAL_H/2, 1); }
+function zoomBy(f) {
+  const ww=wrap.clientWidth/2, wh=wrap.clientHeight/2;
+  const nz=Math.max(0.1,Math.min(4,zoom*f));
+  camX=ww-(ww-camX)*(nz/zoom); camY=wh-(wh-camY)*(nz/zoom); zoom=nz;
+  applyTransform();
+}
+function setTool(t) {
+  tool=t;
+  document.querySelectorAll('.tb-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tool'+t.charAt(0).toUpperCase()+t.slice(1))?.classList.add('active');
+}
 
-	<div class="carousel-item">
-		<div class="carousel-box">
-			<div class="num">03</div>
-			<img src="weekly_geeks/niels-leenheen.png" />
-			<div class="speaker-info">
-				<div class="title">Niels Leenheen</div>
-				<div class="speaker-bio">
-					<p>Niels Leenheen was naar mijn mening de meest inspirerende spreker op 'the web u want' conference. Zijn combinatie van software en hardware bracht me echt terug naar mijn oude studie TI en wilde gelijk wat doen voor de meesterproef met hardware.</p>
-				</div>
-			</div>
-		</div>
-	</div>
+/* ───────── Present mode ───────── */
+let presenting = false, presentIndex = 0;
+function startPresent() {
+  presenting = true; presentIndex = 0;
+  if (selectedId) { const i = frames.findIndex(f=>f.id===selectedId); if(i>=0) presentIndex=i; }
+  document.getElementById('present').classList.add('on');
+  document.getElementById('presentPage').textContent = '  ·  ' + PAGES[currentPage].name;
+  buildPresentDots();
+  renderPresent();
+}
+function stopPresent() { presenting = false; document.getElementById('present').classList.remove('on'); }
+function presentStep(d) {
+  presentIndex = (presentIndex + d + frames.length) % frames.length;
+  renderPresent();
+}
+function buildPresentDots() {
+  const dots = document.getElementById('presentDots');
+  dots.innerHTML = '';
+  frames.forEach((f,i) => {
+    const dot = document.createElement('div');
+    dot.className = 'present-dot' + (i===presentIndex ? ' active' : '');
+    dot.addEventListener('click', () => { presentIndex=i; renderPresent(); });
+    dots.appendChild(dot);
+  });
+}
+function renderPresent() {
+  const f = frames[presentIndex];
+  const stage = document.getElementById('presentStage');
+  const fr = document.getElementById('presentFrame');
+  const sw = stage.clientWidth, sh = stage.clientHeight;
+  const scale = Math.min((sw*0.86)/f.w, (sh*0.86)/f.h);
+  fr.style.width = f.w+'px'; fr.style.height = f.h+'px';
+  fr.style.background = f.bgColor;
+  fr.style.transform = `scale(${scale})`;
+  fr.style.border = f.type==='wip' ? `1px dashed ${f.accentColor}44` : 'none';
+  fr.innerHTML = frameInnerHTML(f);
+  document.getElementById('presentName').textContent = f.label;
+  document.getElementById('presentCount').textContent = (presentIndex+1)+' / '+frames.length;
+  document.querySelectorAll('.present-dot').forEach((d,i)=>d.classList.toggle('active', i===presentIndex));
+}
 
-	<div class="carousel-item">
-		<div class="carousel-box">
-			<div class="num">04</div>
-			<img src="weekly_geeks/nils-binder.png" />
-			<div class="speaker-info">
-				<div class="title">Nils Binder</div>
-				<div class="speaker-bio">
-					<p>Nils Binder was onze CSS docent en hij leidt het webdevlopmentteam bij 9elements en heeft gewerkt voor klanten als Coca-Cola, Red Bull en FC Schalke 04. Verder vond ik zijn random artwork impressive.</p>
-				</div>
-			</div>
-		</div>
-	</div>
+/* ───────── Detail page ───────── */
+let detailOpen = false;
+function openDetail(f) {
+  if (!f || !f.detail) return;
+  detailOpen = true;
+  const d = f.detail, acc = f.accentColor;
+  document.getElementById('detailCrumb').innerHTML = `${PAGES[currentPage].name} / <b>${f.label.replace(/ —.*$/,'')}</b>`;
+  document.getElementById('detailLabel').textContent = f.label;
+  const doc = document.getElementById('detailDoc');
+  doc.style.background = f.bgColor;
+  doc.innerHTML = `
+    <div class="dd-hero">
+      <div class="dd-hero-glow" style="background:radial-gradient(ellipse at 15% 0%,${acc}2e 0%,transparent 60%)"></div>
+      <div class="dd-tag" style="color:${acc}">${f.tag}</div>
+      <div class="dd-title" style="color:${acc}">${f.title.replace(/\n/g,' ')}</div>
+      <div class="dd-intro">${d.intro}</div>
+    </div>
+    ${(d.meta&&d.meta.length) ? `<div class="dd-meta">${d.meta.map(m=>`<div class="dd-meta-item"><span class="dd-meta-k">${m.k}</span><span class="dd-meta-v">${m.v}</span></div>`).join('')}</div>` : ''}
+    <div class="dd-body">
+      ${d.sections.map(s=>`<div class="dd-section"><div class="dd-h" style="color:${acc}">${s.h}</div><div class="dd-p">${s.p.replace(/\n/g,'<br><br>')}</div></div>`).join('')}
+      <div class="dd-tags">${(f.pills||[]).map(p=>`<span class="dd-pill" style="color:${p.c};border-color:${p.c}55;background:${p.b}">${p.l}</span>`).join('')}</div>
+    </div>`;
+  document.getElementById('detailScroll').scrollTop = 0;
+  document.getElementById('detail').classList.add('on');
+}
+function closeDetail() { detailOpen = false; document.getElementById('detail').classList.remove('on'); }
 
-	<div class="carousel-item">
-		<div class="carousel-box">
-			<div class="num">05</div>
-			<img src="weekly_geeks/robert-broersma.png" />
-			<div class="speaker-info">
-				<div class="title">Robert Broersma</div>
-				<div class="speaker-bio">
-					<p>Robert Broersma onderdeel van de Dutch Design System, hij vertelde ons hoe we websites kunnen maken met focus op accesbility.</p>
-				</div>
-			</div>
-		</div>
-	</div>
+/* ───────── Input ───────── */
+wrap.addEventListener('mousedown', e => {
+  if (e.button!==0) return;
+  const onCanvas = e.target===canvasEl||e.target.id==='dot-grid'||e.target.classList.contains('section-label');
+  if (onCanvas || tool==='hand') {
+    isPanning=true; wrap.classList.add('panning');
+    panStart={x:e.clientX,y:e.clientY}; camStart={x:camX,y:camY};
+    if(onCanvas) selectFrame(null);
+  }
+});
+window.addEventListener('mouseup',()=>{ isPanning=false; wrap.classList.remove('panning'); });
+window.addEventListener('mousemove', e => {
+  if(isPanning){ camX=camStart.x+e.clientX-panStart.x; camY=camStart.y+e.clientY-panStart.y; applyTransform(); }
+});
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r=wrap.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
+  const f=e.deltaY<0?1.09:0.92, nz=Math.max(0.1,Math.min(4,zoom*f));
+  camX=mx-(mx-camX)*(nz/zoom); camY=my-(my-camY)*(nz/zoom); zoom=nz;
+  applyTransform();
+},{passive:false});
 
-	<div class="carousel-item">
-		<div class="carousel-box">
-			<div class="num">06</div>
-			<img src="weekly_geeks/john-huijkman.png" />
-			<div class="speaker-info">
-				<div class="title">John Huijkman</div>
-				<div class="speaker-bio">
-					<p>John Huijkman liep met ons langs verschillende beperkingen waar we ons als webdevelopers op moeten focussen en waar we ons op moeten focussen om een beter web te maken. Verder ook gingen we kijken wat we per beperking kunnen doen om aan de eisen van deze mensen te kunnen voldoen.</p>
-				</div>
-			</div>
-		</div>
-	</div>
+window.addEventListener('keydown', e => {
+  if(e.target.tagName==='INPUT') return;
+  if(detailOpen) { if(e.key==='Escape') closeDetail(); return; }
+  if(presenting) {
+    if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter') { e.preventDefault(); presentStep(1); }
+    if(e.key==='ArrowLeft') presentStep(-1);
+    if(e.key==='Escape') stopPresent();
+    return;
+  }
+  if(e.altKey && (e.key==='p'||e.key==='P')) { startPresent(); return; }
+  if(e.shiftKey && e.key==='1') { fitAll(); return; }
+  if(e.key==='1') resetZoom();
+  if(e.key==='f'||e.key==='F') setTool('frame');
+  if(e.key==='h'||e.key==='H') setTool('hand');
+  if(e.key==='v'||e.key==='V') setTool('move');
+  if(e.key==='t'||e.key==='T') setTool('text');
+  if(e.key==='r'||e.key==='R') setTool('shape');
+  if(e.key==='p'||e.key==='P') setTool('pen');
+  if(e.key==='c'||e.key==='C') setTool('comment');
+  if(e.key==='Escape') selectFrame(null);
+});
 
-	<div class="carousel-item">
-		<div class="carousel-box">
-			<div class="num">07</div>
-			<img src="weekly_geeks/nadieh-bremer.png" />
-			<div class="speaker-info">
-				<div class="title">Nadieh Bremer</div>
-				<div class="speaker-bio">
-					<p>De werkwijze van Nadieh Bremer was het intressants om te zien, want zij is een professional en hoe doet een professional dat dan. Ze begint met veel schetsen en ook echt veel schetsen totdat ze iets vind wat ik ook super kan knap van haar vond is dat ze zich zelf geen developer noemt, maar wel mogelijk de mooiste websites maakt die ik heb gezien.</p>
-				</div>
-			</div>
-		</div>
-	</div>
+window.addEventListener('resize', () => { applyTransform(); if(presenting) renderPresent(); });
 
-	<div class="carousel-item">
-		<div class="carousel-box">
-			<div class="num">08</div>
-			<img src="weekly_geeks/kevin-powell.png" />
-			<div class="speaker-info">
-				<div class="title">Kevin Powell</div>
-				<div class="speaker-bio">
-					<p>Kevin Powell was vet om te zien op het 'Smashing Conference', want kijk hem vroeger ook op youtube. Ik vind zijn kennis in CSS zo inspirerend, want hij heeft er gewoon echt plezier in en dat werd me weer herinnerd dat het coderen niet altijd gaat op het eindresultaat maar om de reis en de problemen die je tussen door oplost.</p>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-</section>
-    <!-- <section class="grid-section" id="grid-selection">
-        <div class="grid-header reveal">
-            <h2>Weekly <em>Nerd</em></h2>
-            <p>5 total</p>
-        </div>
-        <div class="grid">
-            <div class="grid-item reveal">
-                <div class="grid-item-inner">
-                    <img src="/weekly_nerd/tahoe.png" alt="Deep Cuts Vol. 1">
-                    <div class="grid-item-info">
-                        <span class="grid-item-tag">Niki Tonsky</span>
-                        <p class="grid-item-title">It's hard to justify Tahoe icons</p>
-                    </div>
-                </div>
-            </div>
-            <div class="grid-item reveal">
-                <div class="grid-item-inner">
-                    <img src="/weekly_nerd/text-inputs.png" alt="The Live Set">
-                    <div class="grid-item-info">
-                        <span class="grid-item-tag">Heydon Pickering</span>
-                        <p class="grid-item-title">What happened to Text Inputs</p>
-                    </div>
-                </div>
-            </div>
-            <div class="grid-item reveal">
-                <div class="grid-item-inner">
-                    <img src="/weekly_nerd/vasilis2.png" alt="Mix Theory">
-                    <div class="grid-item-info">
-                        <span class="grid-item-tag">Vasilis van Gemert</span>
-                        <p class="grid-item-title">Exclusive Design</p>
-                    </div>
-                </div>
-            </div>
-            <div class="grid-item reveal">
-                <div class="grid-item-inner">
-                    <img src="/weekly_nerd/vasilis.png" alt="After Dark">
-                    <div class="grid-item-info">
-                        <span class="grid-item-tag">Vasilis van Gemert</span>
-                        <p class="grid-item-title">Flipping Things</p>
-                    </div>
-                </div>
-            </div>
-            <div class="grid-item reveal">
-                <div class="grid-item-inner">
-                    <img src="/weekly_nerd/tetra.png" alt="Reverb Studies">
-                    <div class="grid-item-info">
-                        <span class="grid-item-tag">Leonie Watson</span>
-                        <p class="grid-item-title">Accessibility and the agentic web</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section> -->
-
-    <!-- === SPRINT 0 === -->
-    <!-- <section class="feature-section" id="sprint-section">
-        <div class="feature-header reveal">
-            <h2>Sprint <em>0</em></h2>
-            <p>Oriëntatie</p>
-        </div>
-        <a href="sprint-0.html" class="feature-card reveal">
-            <div class="feature-card-number">00</div>
-            <div class="feature-card-content">
-                <span class="feature-card-label">Sprint 0 — Minor WDD</span>
-                <h3 class="feature-card-title">
-                    Begin van<br>
-                    <em>het avontuur</em>
-                </h3>
-                <p class="feature-card-desc">De eerste sprint was een kennismaking met de minor, de medestudenten en de manier van werken. Wat zijn mijn leerdoelen, wie ben ik als developer en waar wil ik naartoe?</p>
-                <span class="feature-card-link">Lees verslag →</span>
-            </div>
-        </a>
-    </section> -->
-
-    <!-- === HACKATHON === -->
-    <!-- <section class="feature-section" id="hackathon-section">
-        <div class="feature-header reveal">
-            <h2>Hacka<em>thon</em></h2>
-            <p>Samenwerking</p>
-        </div>
-        <a href="hackathon.html" class="feature-card reveal">
-            <div class="feature-card-number">48</div>
-            <div class="feature-card-content">
-                <span class="feature-card-label">Hackathon — Minor WDD</span>
-                <h3 class="feature-card-title">
-                    Bouwen onder<br>
-                    <em>tijdsdruk</em>
-                </h3>
-                <p class="feature-card-desc">In een intensieve sessie werkten we samen aan een concept, van idee tot werkend prototype. Wat heb ik bijgedragen, wat leerde ik over samenwerken en snel beslissingen nemen?</p>
-                <span class="feature-card-link">Lees verslag →</span>
-            </div>
-        </a>
-    </section> -->
-
-    <!-- === VAKKEN === -->
-    <!-- <section class="vakken-section" id="vakken-section">
-        <div class="grid-header reveal">
-            <h2>Vak<em>ken</em></h2>
-            <p>4 vakken</p>
-        </div>
-        <div class="vakken-grid reveal">
-            <a href="vakken.html#css-to-the-rescue" class="vakken-item">
-                <span class="vakken-item-number">No. 01</span>
-                <p class="vakken-item-title">CSS to the <em>Rescue</em></p>
-                <p class="vakken-item-desc">Experimenteren met CSS buiten de gebaande paden — van scroll-driven animations tot container queries en de kracht van moderne layout-technieken.</p>
-                <span class="vakken-item-tag">CSS · Experimenteel</span>
-            </a>
-            <a href="vakken.html#human-centered-design" class="vakken-item">
-                <span class="vakken-item-number">No. 02</span>
-                <p class="vakken-item-title">Human Centered <em>Design</em></p>
-                <p class="vakken-item-desc">Ontwerpen vanuit de gebruiker. Iteratief testen met echte mensen, luisteren naar feedback en de vertaalslag maken naar een betere interface.</p>
-                <span class="vakken-item-tag">UX · Testen</span>
-            </a>
-            <a href="vakken.html#browser-technologies" class="vakken-item">
-                <span class="vakken-item-number">No. 03</span>
-                <p class="vakken-item-title">Browser <em>Technologies</em></p>
-                <p class="vakken-item-desc">Progressive enhancement en feature detection als basis voor robuuste webapplicaties die werken voor iedereen, ongeacht browser of apparaat.</p>
-                <span class="vakken-item-tag">Toegankelijkheid · PE</span>
-            </a>
-            <a href="vakken.html#web-app-from-scratch" class="vakken-item">
-                <span class="vakken-item-number">No. 04</span>
-                <p class="vakken-item-title">Web App from <em>Scratch</em></p>
-                <p class="vakken-item-desc">Vanilla JavaScript, geen frameworks, geen shortcuts. Data ophalen, manipuleren en renderen zonder een enkel pakket te installeren.</p>
-                <span class="vakken-item-tag">JavaScript · Vanilla</span>
-            </a>
-        </div>
-    </section> -->
-
-    <!-- === MEESTERPROEF === -->
-    <!-- <section class="feature-section" id="meesterproef-section">
-        <div class="feature-header reveal">
-            <h2>Meester<em>proef</em></h2>
-            <p>Eindproject</p>
-        </div>
-        <a href="meesterproef.html" class="feature-card reveal">
-            <div class="feature-card-number">★</div>
-            <div class="feature-card-content">
-                <span class="feature-card-label">Meesterproef — Minor WDD</span>
-                <h3 class="feature-card-title">
-                    Alles komt<br>
-                    <em>samen</em>
-                </h3>
-                <p class="feature-card-desc">Het eindproject van de minor: een echte opdracht voor een echte opdrachtgever. Wat was mijn rol, wat heb ik gebouwd en wat heb ik geleerd over mezelf als developer?</p>
-                <span class="feature-card-link">Lees reflectie →</span>
-            </div>
-        </a>
-    </section> -->
-
-    <!-- === DRIE GESPREKKEN === -->
-    <!-- <section class="gesprekken-section" id="gesprekken-section">
-        <div class="grid-header reveal">
-            <h2>Drie <em>Gesprekken</em></h2>
-            <p>Reflectie</p>
-        </div>
-        <div class="gesprekken-grid">
-            <a href="gesprekken/gesprek-1.html" class="gesprek-card reveal">
-                <div class="gesprek-card-num">01</div>
-                <span class="gesprek-card-label">Eerste gesprek</span>
-                <p class="gesprek-card-title">Wie ben ik als <em>developer?</em></p>
-                <p class="gesprek-card-desc">Een eerste gesprek over mijn leerdoelen, kwaliteiten en wat ik wil halen uit de minor.</p>
-                <span class="gesprek-card-link">Lees reflectie →</span>
-            </a>
-            <a href="gesprekken/gesprek-2.html" class="gesprek-card reveal">
-                <div class="gesprek-card-num">02</div>
-                <span class="gesprek-card-label">Tweede gesprek</span>
-                <p class="gesprek-card-title">Halverwege — wat <em>heb ik geleerd?</em></p>
-                <p class="gesprek-card-desc">Terugkijken op de eerste helft van de minor: wat gaat goed, wat kan beter en waar ga ik op sturen?</p>
-                <span class="gesprek-card-link">Lees reflectie →</span>
-            </a>
-            <a href="gesprekken/gesprek-3.html" class="gesprek-card reveal">
-                <div class="gesprek-card-num">03</div>
-                <span class="gesprek-card-label">Derde gesprek</span>
-                <p class="gesprek-card-title">Blik op de <em>toekomst</em></p>
-                <p class="gesprek-card-desc">Afsluiting van de minor: wat neem ik mee, hoe ben ik gegroeid en welke richting wil ik op?</p>
-                <span class="gesprek-card-link">Lees reflectie →</span>
-            </a>
-        </div>
-    </section> -->
-
-    <footer class="footer">
-        <div class="footer-logo"><img src="logo.png" alt="Minor WDD Blog"></div>
-        <div class="footer-center">Minor WDD Blog</div>
-        <div class="footer-meta">© 2026</div>
-    </footer>
-
-    <script src="script.js"></script>
-    <script src="project-carousel.js"></script>
-    <script src="test.js"></script>
-    <script src="https://unpkg.co/gsap@3/dist/gsap.min.js"></script>
+buildPagesList();
+buildCanvas();
+showPageProps();
+setTimeout(fitAll, 80);
+</script>
 </body>
 </html>
