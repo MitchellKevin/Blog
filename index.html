@@ -7,315 +7,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;450;500;600&display=swap" rel="stylesheet"/>
-<style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  /* Figma design tokens (dark) */
-  --canvas:        #1e1e1e;
-  --chrome:        #2c2c2c;
-  --chrome-2:      #383838;
-  --input:         #2c2c2c;
-  --input-hover:   #383838;
-  --border:        #383838;
-  --divider:       rgba(255,255,255,0.07);
-  --text:          #ffffff;
-  --text-2:        #b3b3b3;
-  --text-3:        #7a7a7a;
-  --icon:          #cdcdcd;
-  --blue:          #0d99ff;
-  --blue-hover:    #0a85e0;
-  --blue-soft:     rgba(13,153,255,0.18);
-  --selected-row:  rgba(13,153,255,0.16);
-  --hover:         rgba(255,255,255,0.06);
-  --mono: 'Space Mono', monospace;
-  --sans: 'Inter', -apple-system, system-ui, sans-serif;
-}
-html, body {
-  width:100%; height:100%; overflow:hidden;
-  background:var(--canvas); color:var(--text);
-  font-family:var(--sans); font-size:11px; user-select:none;
-  -webkit-font-smoothing:antialiased;
-}
-svg { display:block; }
-
-/* ───────────── Top toolbar ───────────── */
-.toolbar {
-  position:fixed; top:0; left:0; right:0; height:40px;
-  background:var(--chrome); border-bottom:1px solid var(--border);
-  display:flex; align-items:center; z-index:100; padding:0 4px;
-}
-.tb-group { display:flex; align-items:center; gap:0; }
-.tb-left  { flex:1; justify-content:flex-start; }
-.tb-center{ position:absolute; left:50%; transform:translateX(-50%); }
-.tb-right { flex:1; justify-content:flex-end; gap:2px; padding-right:6px; }
-
-.tb-btn {
-  height:32px; min-width:32px; padding:0 4px; border:none; background:none;
-  color:var(--icon); cursor:pointer; border-radius:5px;
-  display:flex; align-items:center; justify-content:center; gap:2px;
-  transition:background .1s, color .1s;
-}
-.tb-btn:hover { background:var(--hover); color:#fff; }
-.tb-btn.active { background:var(--blue); color:#fff; }
-.tb-btn.active:hover { background:var(--blue); }
-.tb-caret { opacity:.5; }
-.tb-sep { width:1px; height:18px; background:var(--border); margin:0 6px; }
-
-.tb-logo {
-  width:32px; height:32px; border-radius:5px; cursor:pointer;
-  display:flex; align-items:center; justify-content:center; color:var(--icon);
-}
-.tb-logo:hover { background:var(--hover); }
-
-.tb-file { display:flex; align-items:center; gap:6px; padding:5px 8px; border-radius:5px; cursor:pointer; }
-.tb-file:hover { background:var(--hover); }
-.tb-file-name { font-weight:600; color:var(--text); font-size:12px; }
-.tb-file-crumb { color:var(--text-3); font-size:12px; }
-
-.avatars { display:flex; align-items:center; margin-right:4px; }
-.avatar {
-  width:24px; height:24px; border-radius:50%; border:2px solid var(--chrome);
-  display:flex; align-items:center; justify-content:center;
-  font-size:10px; font-weight:600; color:#fff; margin-left:-6px;
-}
-.avatar:first-child { margin-left:0; }
-.btn-present {
-  width:28px; height:28px; border-radius:5px; border:none; background:none;
-  color:var(--icon); cursor:pointer; display:flex; align-items:center; justify-content:center;
-}
-.btn-present:hover { background:var(--blue); color:#fff; }
-.btn-share {
-  background:var(--blue); color:#fff; border:none; height:28px; padding:0 14px;
-  border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; font-family:var(--sans);
-}
-.btn-share:hover { background:var(--blue-hover); }
-
-/* ───────────── App grid ───────────── */
-.app {
-  position:fixed; top:40px; bottom:0; left:0; right:0;
-  display:grid; grid-template-columns:240px 1fr 240px;
-}
-
-/* ───────────── Left panel ───────────── */
-.panel-left { background:var(--chrome); border-right:1px solid var(--border); display:flex; flex-direction:column; overflow:hidden; }
-.panel-tabs { display:flex; height:40px; border-bottom:1px solid var(--divider); padding:0 8px; gap:2px; align-items:center; }
-.panel-tab { padding:6px 8px; font-size:11px; font-weight:600; color:var(--text-3); cursor:pointer; border-radius:5px; }
-.panel-tab:hover { color:var(--text-2); }
-.panel-tab.active { color:var(--text); }
-.panel-tab.active::after { content:''; display:block; height:2px; background:var(--text); border-radius:2px; margin-top:5px; margin-bottom:-6px; }
-
-.section { border-bottom:1px solid var(--divider); }
-.section-head {
-  display:flex; align-items:center; justify-content:space-between;
-  padding:8px 16px 8px 12px; font-size:11px; font-weight:600; color:var(--text-2); cursor:default;
-}
-.section-head .chev { color:var(--text-3); }
-
-.pages { padding:0 8px 8px; }
-.page-row {
-  display:flex; align-items:center; gap:8px; height:28px; padding:0 8px;
-  border-radius:5px; cursor:pointer; font-size:11px; color:var(--text-2);
-}
-.page-row:hover { background:var(--hover); }
-.page-row.active { background:var(--selected-row); color:var(--text); }
-.page-check { width:12px; color:var(--blue); opacity:0; flex-shrink:0; }
-.page-row.active .page-check { opacity:1; }
-
-.layers { padding:0 8px 8px; flex:1; overflow-y:auto; scrollbar-width:thin; }
-.layers::-webkit-scrollbar { width:8px; }
-.layers::-webkit-scrollbar-thumb { background:#4a4a4a; border-radius:4px; border:2px solid var(--chrome); }
-.layer-row {
-  display:flex; align-items:center; gap:6px; height:26px; padding:0 8px;
-  border-radius:5px; cursor:pointer; font-size:11px; color:var(--text-2);
-}
-.layer-row:hover { background:var(--hover); }
-.layer-row.selected { background:var(--selected-row); color:var(--blue); }
-.layer-row .l-icon { color:var(--text-3); flex-shrink:0; }
-.layer-row.selected .l-icon { color:var(--blue); }
-.layer-row .l-name { flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.layer-row .l-eye { opacity:0; color:var(--text-3); flex-shrink:0; }
-.layer-row:hover .l-eye { opacity:1; }
-
-/* ───────────── Canvas ───────────── */
-.canvas-wrap { position:relative; overflow:hidden; background:var(--canvas); cursor:default; }
-.canvas-wrap.panning { cursor:grabbing; }
-#dot-grid {
-  position:absolute; inset:0; pointer-events:none;
-  background-image:radial-gradient(circle, #2b2b2b 1.2px, transparent 1.2px);
-  background-size:24px 24px;
-}
-#canvas { position:absolute; top:0; left:0; transform-origin:0 0; }
-.frame { position:absolute; cursor:pointer; }
-.frame-label {
-  position:absolute; top:-20px; left:1px; font-size:11px; font-weight:450;
-  color:var(--text-3); white-space:nowrap; pointer-events:none; letter-spacing:.01em;
-}
-.frame:hover .frame-label, .frame.selected .frame-label { color:var(--blue); }
-.frame-inner { width:100%; height:100%; overflow:hidden; position:relative; outline:1px solid transparent; transition:outline-color .1s; }
-.frame:hover .frame-inner { outline-color:rgba(13,153,255,0.5); }
-.frame.selected .frame-inner { outline:2px solid var(--blue); }
-
-/* blog artwork inside frames (keeps its own mono aesthetic) */
-.fc-cover { height:100%; display:flex; flex-direction:column; justify-content:flex-end; padding:28px; position:relative; overflow:hidden; }
-.fc-cover-glow { position:absolute; inset:0; pointer-events:none; }
-.fc-cover-tag { font-family:var(--mono); font-size:10px; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:8px; position:relative; }
-.fc-cover-title { font-family:var(--mono); font-weight:700; line-height:1.15; position:relative; }
-.fc-cover-sub { font-family:var(--sans); font-size:13px; line-height:1.6; margin-top:10px; position:relative; opacity:0.65; }
-.fc-cover-meta { font-family:var(--mono); font-size:10px; margin-top:16px; opacity:0.35; position:relative; }
-.fc-post { height:100%; padding:24px; display:flex; flex-direction:column; gap:12px; }
-.fc-post-tag { font-family:var(--mono); font-size:10px; letter-spacing:0.12em; text-transform:uppercase; }
-.fc-post-title { font-family:var(--mono); font-size:17px; font-weight:700; line-height:1.3; color:#f0f0f0; }
-.fc-post-body { font-family:var(--sans); font-size:12px; line-height:1.7; color:#888; flex:1; overflow:hidden; }
-.fc-post-footer { display:flex; align-items:center; justify-content:space-between; padding-top:12px; border-top:1px solid #2a2a2a; margin-top:auto; }
-.fc-post-date { font-family:var(--mono); font-size:9px; color:#555; }
-.fc-post-tags { display:flex; gap:4px; flex-wrap:wrap; }
-.fc-pill { font-family:var(--mono); font-size:9px; padding:2px 6px; border-radius:3px; border:1px solid; }
-.fc-wip { height:100%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; }
-.fc-wip-icon { font-size:24px; opacity:0.15; }
-.fc-wip-text { font-family:var(--mono); font-size:9px; color:#4a4a4a; letter-spacing:0.12em; text-transform:uppercase; }
-/* leerdoelen frame */
-.fc-goals { height:100%; padding:24px; display:flex; flex-direction:column; gap:8px; overflow:hidden; }
-.fc-goals-title { font-family:var(--mono); font-size:18px; font-weight:700; color:#f0f0f0; line-height:1.2; margin-bottom:6px; }
-.goal-list { display:flex; flex-direction:column; gap:11px; }
-.goal { padding:2px 0 2px 12px; border-left:2px solid; }
-.goal-top { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:4px; }
-.goal-name { font-family:var(--mono); font-size:12px; font-weight:700; color:#e8e8e8; }
-.goal-status { font-family:var(--mono); font-size:8px; padding:2px 6px; border-radius:3px; letter-spacing:0.06em; text-transform:uppercase; white-space:nowrap; }
-.goal-text { font-family:var(--sans); font-size:11px; line-height:1.5; color:#888; }
-.section-label { position:absolute; font-family:var(--mono); font-size:11px; color:#383838; letter-spacing:0.1em; text-transform:uppercase; pointer-events:none; white-space:nowrap; }
-
-/* ───────────── Right panel (Design inspector) ───────────── */
-.panel-right { background:var(--chrome); border-left:1px solid var(--border); display:flex; flex-direction:column; overflow-y:auto; scrollbar-width:thin; }
-.panel-right::-webkit-scrollbar { width:8px; }
-.panel-right::-webkit-scrollbar-thumb { background:#4a4a4a; border-radius:4px; border:2px solid var(--chrome); }
-.insp-tabs { display:flex; height:40px; align-items:center; padding:0 8px; gap:2px; border-bottom:1px solid var(--divider); flex-shrink:0; }
-.insp-tab { padding:6px 8px; font-size:11px; font-weight:600; color:var(--text-3); cursor:pointer; border-radius:5px; }
-.insp-tab:hover { color:var(--text-2); }
-.insp-tab.active { color:var(--text); }
-
-.insp-section { padding:12px 16px; border-bottom:1px solid var(--divider); }
-.insp-title { font-size:11px; font-weight:600; color:var(--text); margin-bottom:10px; display:flex; align-items:center; justify-content:space-between; }
-.insp-title .add { color:var(--text-3); cursor:pointer; }
-.insp-title .add:hover { color:var(--text); }
-
-.align-row { display:flex; align-items:center; justify-content:space-between; padding:6px 14px; border-bottom:1px solid var(--divider); }
-.align-btn { width:26px; height:26px; border-radius:5px; display:flex; align-items:center; justify-content:center; color:var(--icon); cursor:pointer; }
-.align-btn:hover { background:var(--hover); color:#fff; }
-
-.field-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-.field {
-  display:flex; align-items:center; gap:6px; height:28px; padding:0 8px;
-  background:var(--input); border:1px solid transparent; border-radius:5px; cursor:default;
-}
-.field:hover { border-color:var(--border); background:var(--input-hover); }
-.field .f-key { color:var(--text-3); font-size:11px; width:12px; flex-shrink:0; }
-.field .f-val { color:var(--text); font-size:11px; flex:1; }
-
-.color-row { display:flex; align-items:center; gap:8px; height:28px; padding:0 8px; background:var(--input); border:1px solid transparent; border-radius:5px; }
-.color-row:hover { border-color:var(--border); }
-.swatch { width:16px; height:16px; border-radius:4px; border:1px solid rgba(255,255,255,0.12); flex-shrink:0; }
-.color-hex { flex:1; color:var(--text); font-size:11px; text-transform:uppercase; }
-.color-op { color:var(--text-2); font-size:11px; }
-.color-eye { color:var(--text-3); cursor:pointer; }
-.color-eye:hover { color:var(--text); }
-.stack { display:flex; flex-direction:column; gap:6px; }
-
-.export-btn {
-  width:100%; height:28px; background:var(--input); border:1px solid var(--border);
-  color:var(--text-2); border-radius:6px; font-family:var(--sans); font-size:11px; font-weight:600;
-  cursor:pointer; margin-top:2px;
-}
-.export-btn:hover { background:var(--input-hover); color:var(--text); }
-.export-btn.primary { background:var(--blue); border-color:var(--blue); color:#fff; }
-.export-btn.primary:hover { background:var(--blue-hover); }
-
-/* ───────────── Floating zoom pill ───────────── */
-.zoombar {
-  position:fixed; bottom:16px; right:256px; height:32px; z-index:90;
-  background:var(--chrome); border:1px solid var(--border); border-radius:8px;
-  display:flex; align-items:center; padding:0 2px; box-shadow:0 4px 14px rgba(0,0,0,0.35);
-}
-.zoombar button { width:28px; height:28px; border:none; background:none; color:var(--icon); cursor:pointer; border-radius:5px; font-size:15px; display:flex; align-items:center; justify-content:center; }
-.zoombar button:hover { background:var(--hover); color:#fff; }
-.zoom-val { min-width:46px; text-align:center; font-size:11px; color:var(--text-2); cursor:pointer; padding:0 4px; }
-.zoom-val:hover { color:#fff; }
-
-.minimap {
-  position:fixed; bottom:60px; right:256px; width:150px; height:96px; z-index:90;
-  background:#1a1a1a; border:1px solid var(--border); border-radius:8px; overflow:hidden;
-  box-shadow:0 4px 14px rgba(0,0,0,0.35);
-}
-.minimap-frame { position:absolute; border-radius:1px; pointer-events:none; }
-.minimap-viewport { position:absolute; border:1px solid var(--blue); background:rgba(13,153,255,0.10); pointer-events:none; }
-
-.kbd-hint { position:fixed; bottom:18px; left:256px; font-size:11px; color:var(--text-3); z-index:90; display:flex; gap:14px; align-items:center; }
-.kbd { background:var(--chrome); border:1px solid var(--border); padding:2px 6px; border-radius:4px; color:var(--text-2); font-size:10px; }
-
-/* ───────────── Present mode ───────────── */
-.present { position:fixed; inset:0; z-index:1000; background:#171717; display:none; flex-direction:column; }
-.present.on { display:flex; }
-.present-top {
-  height:48px; flex-shrink:0; display:flex; align-items:center; justify-content:space-between;
-  padding:0 16px; background:var(--chrome); border-bottom:1px solid var(--border); color:var(--text);
-}
-.present-top .pt-name { font-size:13px; font-weight:600; }
-.present-top .pt-sub { font-size:11px; color:var(--text-3); margin-left:8px; }
-.present-top .pt-right { display:flex; align-items:center; gap:6px; }
-.present-count { font-family:var(--mono); font-size:11px; color:var(--text-2); padding:0 8px; }
-.present-btn { width:30px; height:30px; border:none; background:none; color:var(--icon); cursor:pointer; border-radius:6px; display:flex; align-items:center; justify-content:center; }
-.present-btn:hover { background:var(--hover); color:#fff; }
-.present-stage { flex:1; position:relative; display:flex; align-items:center; justify-content:center; overflow:hidden; }
-.present-frame { box-shadow:0 30px 80px rgba(0,0,0,0.6); border-radius:6px; overflow:hidden; transform-origin:center; }
-.present-zone { position:absolute; top:0; bottom:0; width:33%; cursor:pointer; z-index:2; display:flex; align-items:center; opacity:0; transition:opacity .15s; }
-.present-zone:hover { opacity:1; }
-.present-zone.prev { left:0; justify-content:flex-start; padding-left:24px; }
-.present-zone.next { right:0; justify-content:flex-end; padding-right:24px; }
-.present-zone svg { color:#fff; filter:drop-shadow(0 2px 6px rgba(0,0,0,.6)); }
-.present-dots { position:absolute; bottom:18px; left:50%; transform:translateX(-50%); display:flex; gap:7px; z-index:3; }
-.present-dot { width:7px; height:7px; border-radius:50%; background:#444; cursor:pointer; transition:background .15s; }
-.present-dot.active { background:var(--blue); }
-
-/* ───────────── Detail page (Figma-style reader) ───────────── */
-.detail { position:fixed; inset:0; z-index:1000; background:var(--canvas); display:none; flex-direction:column; }
-.detail.on { display:flex; }
-.detail-grid {
-  position:absolute; inset:0; pointer-events:none;
-  background-image:radial-gradient(circle, #2b2b2b 1.2px, transparent 1.2px);
-  background-size:24px 24px; opacity:.5;
-}
-.detail-top {
-  height:48px; flex-shrink:0; z-index:2; display:flex; align-items:center; justify-content:space-between;
-  padding:0 12px; background:var(--chrome); border-bottom:1px solid var(--border); color:var(--text);
-}
-.detail-back { display:flex; align-items:center; gap:6px; height:30px; padding:0 10px; border:none; background:none; color:var(--text-2); cursor:pointer; border-radius:6px; font-family:var(--sans); font-size:12px; font-weight:600; }
-.detail-back:hover { background:var(--hover); color:#fff; }
-.detail-crumb { font-size:12px; color:var(--text-3); }
-.detail-crumb b { color:var(--text); font-weight:600; }
-.detail-close { width:30px; height:30px; border:none; background:none; color:var(--icon); cursor:pointer; border-radius:6px; display:flex; align-items:center; justify-content:center; }
-.detail-close:hover { background:var(--hover); color:#fff; }
-.detail-scroll { flex:1; overflow-y:auto; z-index:1; scrollbar-width:thin; }
-.detail-scroll::-webkit-scrollbar { width:10px; }
-.detail-scroll::-webkit-scrollbar-thumb { background:#444; border-radius:5px; border:3px solid var(--canvas); }
-.detail-doc { max-width:760px; margin:48px auto 100px; border-radius:10px; overflow:hidden; box-shadow:0 30px 90px rgba(0,0,0,0.55); border:1px solid var(--divider); position:relative; }
-.dd-frame-label { font-family:var(--mono); font-size:11px; color:var(--text-3); margin:0 auto 8px; max-width:760px; padding-left:2px; }
-.dd-hero { padding:56px 56px 44px; position:relative; overflow:hidden; }
-.dd-hero-glow { position:absolute; inset:0; pointer-events:none; }
-.dd-tag { font-family:var(--mono); font-size:11px; letter-spacing:0.14em; text-transform:uppercase; margin-bottom:14px; position:relative; }
-.dd-title { font-family:var(--mono); font-weight:700; font-size:52px; line-height:1.05; position:relative; }
-.dd-intro { font-family:var(--sans); font-size:16px; line-height:1.7; color:#cfcfcf; margin-top:20px; max-width:60ch; position:relative; }
-.dd-meta { display:flex; flex-wrap:wrap; gap:10px; padding:20px 56px; border-top:1px solid rgba(255,255,255,0.06); border-bottom:1px solid rgba(255,255,255,0.06); background:rgba(0,0,0,0.18); }
-.dd-meta-item { display:flex; flex-direction:column; gap:3px; }
-.dd-meta-k { font-family:var(--mono); font-size:9px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-3); }
-.dd-meta-v { font-family:var(--sans); font-size:12px; font-weight:600; color:#e6e6e6; }
-.dd-body { padding:44px 56px 52px; background:rgba(0,0,0,0.22); }
-.dd-section { margin-bottom:32px; }
-.dd-h { font-family:var(--mono); font-size:12px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:10px; }
-.dd-p { font-family:var(--sans); font-size:14.5px; line-height:1.85; color:#a8a8a8; max-width:64ch; }
-.dd-tags { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
-.dd-pill { font-family:var(--mono); font-size:10px; padding:3px 9px; border-radius:4px; border:1px solid; }
-</style>
+<link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
+
+<!-- ───────── PAGE STATE (which page is shown — CSS driven) ───────── -->
+<input class="state-input" type="radio" name="page" id="pg-over" value="over" checked/>
+<input class="state-input" type="radio" name="page" id="pg-vakken" value="vakken"/>
+<input class="state-input" type="radio" name="page" id="pg-geeks" value="geeks"/>
+<input class="state-input" type="radio" name="page" id="pg-leerdoelen" value="leerdoelen"/>
 
 <!-- ───────── TOP TOOLBAR ───────── -->
 <div class="toolbar">
@@ -330,36 +30,44 @@ svg { display:block; }
       </svg>
     </div>
     <div class="tb-sep"></div>
-    <button class="tb-btn active" id="toolMove" title="Verplaatsen (V)" onclick="setTool('move')">
+    <label class="tb-btn" title="Verplaatsen (V)">
+      <input class="state-input" type="radio" name="tool" value="move" checked/>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M5 3l14 7-6.5 1.8L9.5 18 5 3z"/></svg>
       <svg class="tb-caret" width="8" height="8" viewBox="0 0 8 8" fill="currentColor"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
-    </button>
-    <button class="tb-btn" id="toolScale" title="Schalen (K)" onclick="setTool('scale')">
+    </label>
+    <label class="tb-btn" title="Schalen (K)">
+      <input class="state-input" type="radio" name="tool" value="scale"/>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 14v6h6M20 10V4h-6"/><path d="M10 14l-6 6M14 10l6-6"/></svg>
-    </button>
+    </label>
     <div class="tb-sep"></div>
-    <button class="tb-btn" id="toolFrame" title="Frame (F)" onclick="setTool('frame')">
+    <label class="tb-btn" title="Frame (F)">
+      <input class="state-input" type="radio" name="tool" value="frame"/>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg>
       <svg class="tb-caret" width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
-    </button>
-    <button class="tb-btn" id="toolShape" title="Vorm (R)" onclick="setTool('shape')">
+    </label>
+    <label class="tb-btn" title="Vorm (R)">
+      <input class="state-input" type="radio" name="tool" value="shape"/>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="1.5"/></svg>
       <svg class="tb-caret" width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
-    </button>
-    <button class="tb-btn" id="toolPen" title="Pen (P)" onclick="setTool('pen')">
+    </label>
+    <label class="tb-btn" title="Pen (P)">
+      <input class="state-input" type="radio" name="tool" value="pen"/>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 3l9 9-4 1-5 5-1 4-9-9 4-1 5-5 1-4z"/></svg>
       <svg class="tb-caret" width="8" height="8" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
-    </button>
-    <button class="tb-btn" id="toolText" title="Tekst (T)" onclick="setTool('text')">
+    </label>
+    <label class="tb-btn" title="Tekst (T)">
+      <input class="state-input" type="radio" name="tool" value="text"/>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 6h14M12 6v13"/></svg>
-    </button>
+    </label>
     <div class="tb-sep"></div>
-    <button class="tb-btn" id="toolHand" title="Hand (H)" onclick="setTool('hand')">
+    <label class="tb-btn" title="Hand (H)">
+      <input class="state-input" type="radio" name="tool" value="hand"/>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 11V5.5a1.5 1.5 0 013 0V11m0-.5V4.5a1.5 1.5 0 013 0V11m0-.5V6a1.5 1.5 0 013 0v7c0 3.5-2.5 6-6 6s-5-2-6.5-4.5l-2-3.2a1.5 1.5 0 012.4-1.8L8 12"/></svg>
-    </button>
-    <button class="tb-btn" id="toolComment" title="Reactie (C)" onclick="setTool('comment')">
+    </label>
+    <label class="tb-btn" title="Reactie (C)">
+      <input class="state-input" type="radio" name="tool" value="comment"/>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 12a8 8 0 01-11.5 7.2L4 20l1-4.2A8 8 0 1120 12z"/></svg>
-    </button>
+    </label>
   </div>
 
   <div class="tb-group tb-center">
@@ -387,36 +95,522 @@ svg { display:block; }
 
   <!-- LEFT PANEL -->
   <div class="panel-left">
+    <input class="state-input" type="radio" name="ltab" id="ltab-file" checked/>
+    <input class="state-input" type="radio" name="ltab" id="ltab-assets"/>
     <div class="panel-tabs">
-      <div class="panel-tab active">Bestand</div>
-      <div class="panel-tab">Assets</div>
+      <label class="panel-tab" for="ltab-file">Bestand</label>
+      <label class="panel-tab" for="ltab-assets">Assets</label>
     </div>
-    <div class="section">
-      <div class="section-head">
-        <span>Pagina's</span>
-        <svg class="chev" width="10" height="10" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
+
+    <div id="leftFile">
+      <div class="section">
+        <div class="section-head">
+          <span>Pagina's</span>
+          <svg class="chev" width="10" height="10" viewBox="0 0 8 8" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M1 2.5L4 5.5 7 2.5"/></svg>
+        </div>
+        <div class="pages">
+          <label class="page-row" for="pg-over"><svg class="page-check" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6.5L5 9.5 10 3"/></svg>Over mij</label>
+          <label class="page-row" for="pg-vakken"><svg class="page-check" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6.5L5 9.5 10 3"/></svg>Vakken &amp; Projecten</label>
+          <label class="page-row" for="pg-geeks"><svg class="page-check" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6.5L5 9.5 10 3"/></svg>Weekly Geeks</label>
+          <label class="page-row" for="pg-leerdoelen"><svg class="page-check" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6.5L5 9.5 10 3"/></svg>Leerdoelen</label>
+        </div>
       </div>
-      <div class="pages" id="pagesList"></div>
+      <div class="section" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
+        <div class="section-head"><span>Lagen</span></div>
+
+        <div class="layers" data-page="over">
+          <div class="layer-row" data-target="about-drive"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Wat mij drijft</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="about-do"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Wat ik doe</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="about-who"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Wie ben ik</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="about-cover"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Over mij</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+        </div>
+
+        <div class="layers" data-page="vakken">
+          <div class="layer-row" data-target="proj-meester"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Meesterproef</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="proj-hackathon"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Hackathon</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="proj-sprint0"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Sprint 0</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="vak-api"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">API — CMD Casino</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="vak-hcd"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">HCD — VoiceReader</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="vak-browser"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Browser Technologies</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="vak-css"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">CSS to the Rescue</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="vak-cover"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Overzicht</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+        </div>
+
+        <div class="layers" data-page="geeks">
+          <div class="layer-row" data-target="g-huijkman"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">John Huijkman</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="g-broersma"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Robert Broersma</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="g-leenheen"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Niels Leenheen</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="g-binder"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Nils Binder</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="g-ppk"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Peter-Paul Koch</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="g-valkhof"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Killian Valkhof</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="g-bremer"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Nadieh Bremer</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="g-powell"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Kevin Powell</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="geek-cover"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Weekly Geeks</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+        </div>
+
+        <div class="layers" data-page="leerdoelen">
+          <div class="layer-row" data-target="ld-eind"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Leerdoelen — Eind</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="ld-midden"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Leerdoelen — Midden</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+          <div class="layer-row" data-target="ld-begin"><svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg><span class="l-name">Leerdoelen — Begin</span><svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg></div>
+        </div>
+      </div>
     </div>
-    <div class="section" style="flex:1; display:flex; flex-direction:column; overflow:hidden;">
-      <div class="section-head"><span>Lagen</span></div>
-      <div class="layers" id="layersList"></div>
+
+    <div id="leftAssets">
+      <div class="palette">
+        <div class="palette-hint">Sleep een element op een frame om het toe te voegen. Dubbelklik om tekst te bewerken.</div>
+        <div class="palette-grid">
+          <div class="palette-item" draggable="true" data-elt="heading">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 4v16M18 4v16M6 12h12"/></svg>
+            <span class="pi-label">Kop</span>
+          </div>
+          <div class="palette-item" draggable="true" data-elt="text">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+            <span class="pi-label">Tekst</span>
+          </div>
+          <div class="palette-item" draggable="true" data-elt="button">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="8" width="18" height="8" rx="4"/></svg>
+            <span class="pi-label">Knop</span>
+          </div>
+          <div class="palette-item" draggable="true" data-elt="shape">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+            <span class="pi-label">Vorm</span>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- CANVAS -->
   <div class="canvas-wrap" id="canvasWrap">
     <div id="dot-grid"></div>
-    <div id="canvas"></div>
+    <div id="canvas">
+
+      <!-- PAGE: Over mij -->
+      <section class="page" data-page="over" data-name="Over mij" data-w="1120" data-h="920">
+        <div class="section-label" data-section="Profiel" style="left:60px;top:24px">// profiel</div>
+
+        <div class="frame" data-id="about-cover" data-section="Profiel" data-type="cover" style="--accent:#a78bfa; --bg:#0f0b1e; left:60px; top:60px; width:520px; height:440px;">
+          <span class="frame-label">Over mij</span>
+          <div class="frame-inner">
+            <div class="fc-cover">
+              <div class="fc-cover-glow"></div>
+              <div class="fc-cover-tag">// over mij</div>
+              <div class="fc-cover-title">Hoi, ik ben<br>Mitchell</div>
+              <div class="fc-cover-sub">CMD-student aan de HvA.<br>Design × code, met een<br>voorliefde voor interactie.</div>
+              <div class="fc-cover-meta">front-end · interactie · creative development</div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="about-who" data-section="Profiel" data-type="post" style="--accent:#38bdf8; --bg:#02101a; left:620px; top:60px; width:440px; height:280px;">
+          <span class="frame-label">Wie ben ik</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <div class="fc-post-tag">// achtergrond</div>
+              <div class="fc-post-title">Wie ben ik?</div>
+              <div class="fc-post-body">Ik ben Mitchell Scholte, student Communication &amp; Multimedia Design. In de minor Web Design &amp; Development zoek ik de grens op tussen wat mooi is en wat werkt.<br><br>Liefst bouw ik dingen die je voelt, niet alleen ziet.</div>
+              <div class="fc-post-footer">
+                <div class="fc-post-date">CMD · HvA</div>
+                <div class="fc-post-tags"><span class="fc-pill">cmd</span><span class="fc-pill">amsterdam</span></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="about-do" data-section="Profiel" data-type="post" style="--accent:#10b981; --bg:#02140e; left:620px; top:380px; width:440px; height:280px;">
+          <span class="frame-label">Wat ik doe</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <div class="fc-post-tag">// skills</div>
+              <div class="fc-post-title">Wat ik doe</div>
+              <div class="fc-post-body">Front-end development met HTML, CSS en JavaScript. Interactie- en motion design. Steeds vaker ook 3D en data-visualisatie.<br><br>Ik werk graag iteratief: bouwen, testen, verbeteren.</div>
+              <div class="fc-post-footer">
+                <div class="fc-post-date">toolbox</div>
+                <div class="fc-post-tags"><span class="fc-pill">html/css</span><span class="fc-pill">js</span><span class="fc-pill">three.js</span></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="about-drive" data-section="Profiel" data-type="post" style="--accent:#f59e0b; --bg:#140d00; left:60px; top:540px; width:520px; height:300px;">
+          <span class="frame-label">Wat mij drijft</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <div class="fc-post-tag">// motivatie</div>
+              <div class="fc-post-title">Wat mij drijft</div>
+              <div class="fc-post-body">Het web is een medium dat je kunt buigen. Ik wil weten hoe ver dat gaat — animatie, gamification, dingen die verrassen.<br><br>Deze blog is mijn logboek: elke week iets nieuws, ook als het mislukt. Falen hoort erbij.</div>
+              <div class="fc-post-footer">
+                <div class="fc-post-date">doel van de minor</div>
+                <div class="fc-post-tags"><span class="fc-pill">interactie</span><span class="fc-pill">experiment</span></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: Vakken & Projecten -->
+      <section class="page" data-page="vakken" data-name="Vakken &amp; Projecten" data-w="1840" data-h="700">
+        <div class="section-label" data-section="Minor WDD" style="left:60px;top:24px">// minor wdd</div>
+        <div class="section-label" data-section="Vakken" style="left:400px;top:24px">// vakken</div>
+        <div class="section-label" data-section="Projecten" style="left:1100px;top:24px">// projecten</div>
+
+        <div class="frame" data-id="vak-cover" data-section="Minor WDD" data-type="cover" style="--accent:#a78bfa; --bg:#0f0b1e; left:60px; top:60px; width:300px; height:570px;">
+          <span class="frame-label">Overzicht</span>
+          <div class="frame-inner">
+            <div class="fc-cover">
+              <div class="fc-cover-glow"></div>
+              <div class="fc-cover-tag">// minor wdd</div>
+              <div class="fc-cover-title" style="font-size:24px">Vakken<br>&amp;<br>Projecten</div>
+              <div class="fc-cover-sub">Vier vakken die<br>het web uitpluizen,<br>drie projecten<br>waarin het samenkomt.</div>
+              <div class="fc-cover-meta">css · browser · hcd · api</div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="vak-css" data-section="Vakken" data-type="post" style="--accent:#38bdf8; --bg:#02101a; left:400px; top:60px; width:320px; height:270px;">
+          <span class="frame-label">CSS to the Rescue</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="projects-img/css.png" alt="CSS to the Rescue" loading="lazy">
+              <div class="fc-post-tag">// vak 01</div>
+              <div class="fc-post-title">CSS to<br>the Rescue</div>
+              <div class="fc-post-body">Problemen oplossen met alleen CSS — geen JavaScript. Leren hoe krachtig en creatief het platform zelf is.</div>
+              <div class="fc-post-footer">
+                <div class="fc-post-date">nieuwe inzichten</div>
+                <div class="fc-post-tags"><span class="fc-pill">css</span><span class="fc-pill">no-js</span></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="vak-browser" data-section="Vakken" data-type="post" style="--accent:#f59e0b; --bg:#140d00; left:740px; top:60px; width:320px; height:270px;">
+          <span class="frame-label">Browser Technologies</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="projects-img/ns.png" alt="Browser Technologies" loading="lazy">
+              <div class="fc-post-tag">// vak 02</div>
+              <div class="fc-post-title">Browser<br>Technologies</div>
+              <div class="fc-post-body">JavaScript, APIs en hoe de browser écht werkt. Van fetch tot de event loop — onder de motorkap kijken.</div>
+              <div class="fc-post-footer">
+                <div class="fc-post-date">nieuwe inzichten</div>
+                <div class="fc-post-tags"><span class="fc-pill">javascript</span><span class="fc-pill">apis</span></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="vak-hcd" data-section="Vakken" data-type="post" style="--accent:#34d399; --bg:#001a0e; left:400px; top:360px; width:320px; height:270px;">
+          <span class="frame-label">HCD — VoiceReader</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="projects-img/HCD.png" alt="HCD — VoiceReader" loading="lazy">
+              <div class="fc-post-tag">// vak 03 · hcd</div>
+              <div class="fc-post-title">Human<br>Centered Design</div>
+              <div class="fc-post-body">De gebruiker centraal. Mijn project: VoiceReader — een Chrome-extensie die een screenreader emotionele, genrebewuste stemmen geeft, ontworpen samen met een blinde gebruiker.</div>
+              <div class="fc-post-footer">
+                <div class="fc-post-date">project: voicereader</div>
+                <div class="fc-post-tags"><span class="fc-pill">voicereader</span><span class="fc-pill">a11y</span><span class="fc-pill">ai</span></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="vak-api" data-section="Vakken" data-type="post" style="--accent:#fbbf24; --bg:#1a1203; left:740px; top:360px; width:320px; height:270px;">
+          <span class="frame-label">API — CMD Casino</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="projects-img/CMD-casino.png" alt="API — CMD Casino" loading="lazy">
+              <div class="fc-post-tag">// vak 04 · api</div>
+              <div class="fc-post-title">API</div>
+              <div class="fc-post-body">Data ophalen, verwerken en tonen via API's. Mijn project werd CMD Casino: een full-stack multiplayer casino in Astro.</div>
+              <div class="fc-post-footer">
+                <div class="fc-post-date">project: cmd casino</div>
+                <div class="fc-post-tags"><span class="fc-pill">websockets</span><span class="fc-pill">mollie api</span><span class="fc-pill">wikipedia api</span></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="proj-sprint0" data-section="Projecten" data-type="post" style="--accent:#f59e0b; --bg:#140d00; left:1100px; top:60px; width:320px; height:270px;">
+          <span class="frame-label">Sprint 0</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="projects-img/mitchopoly.png" alt="Sprint 0" loading="lazy">
+              <div class="fc-post-tag">// project · feb 2026</div>
+              <div class="fc-post-title">Sprint 0</div>
+              <div class="fc-post-body">De introductie-opdracht: in 9 dagen een one-page website over jezelf. Ik koos voor 3D met Three.js — en eindigde met een interactief Monopoly-bord over mijn leven.</div>
+              <div class="fc-post-footer">
+                <div class="fc-post-date">3–11 feb 2026</div>
+                <div class="fc-post-tags"><span class="fc-pill">three.js</span><span class="fc-pill">webgl</span><span class="fc-pill">3d</span></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="proj-hackathon" data-section="Projecten" data-type="post" style="--accent:#10b981; --bg:#021a0e; left:1100px; top:360px; width:320px; height:270px;">
+          <span class="frame-label">Hackathon</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="projects-img/hackathon.png" alt="Hackathon" loading="lazy">
+              <div class="fc-post-tag">// project · mrt 2026</div>
+              <div class="fc-post-title">Hackathon</div>
+              <div class="fc-post-body">Twee dagen, één team, één probleem. Bouwen onder druk — en in 48 uur meer leren dan in weken college.</div>
+              <div class="fc-post-footer">
+                <div class="fc-post-date">26 mrt 2026</div>
+                <div class="fc-post-tags"><span class="fc-pill">team</span><span class="fc-pill">48 uur</span></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="proj-meester" data-section="Projecten" data-type="post" style="--accent:#3b82f6; --bg:#020c1a; left:1460px; top:60px; width:320px; height:570px;">
+          <span class="frame-label">Meesterproef</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <div class="fc-post-tag">// project · jun 2026</div>
+              <div class="fc-post-title">Meester<br>proef</div>
+              <div class="fc-post-body">Het eindproject waarin alles samenkomt: een echt team, een echte opdrachtgever en een echte deadline.<br><br>Alles uit de vakken — CSS, browser, HCD en API's — komt hier bij elkaar in één echt product.<br><br>De finale van de minor.</div>
+              <div class="fc-post-footer">
+                <div class="fc-post-date">deadline 19 jun 2026</div>
+                <div class="fc-post-tags"><span class="fc-pill">eindproject</span><span class="fc-pill">team</span></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: Weekly Geeks -->
+      <section class="page" data-page="geeks" data-name="Weekly Geeks" data-w="1500" data-h="900">
+        <div class="section-label" data-section="Weekly Geek" style="left:60px;top:24px">// weekly geek</div>
+        <div class="section-label" data-section="Talks" style="left:440px;top:24px">// talks</div>
+
+        <div class="frame" data-id="geek-cover" data-section="Weekly Geek" data-type="cover" style="--accent:#f472b6; --bg:#1a0a12; left:60px; top:60px; width:340px; height:760px;">
+          <span class="frame-label">Weekly Geeks</span>
+          <div class="frame-inner">
+            <div class="fc-cover">
+              <div class="fc-cover-glow"></div>
+              <div class="fc-cover-tag">// weekly geek · 8 talks</div>
+              <div class="fc-cover-title" style="font-size:24px">Weekly<br>Geeks</div>
+              <div class="fc-cover-sub">Acht sprekers,<br>acht perspectieven<br>op het web.<br>Korte notities per talk.</div>
+              <div class="fc-cover-meta">doorlopend · elke week een nieuwe</div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="g-powell" data-section="Talks" data-type="post" style="--accent:#38bdf8; --bg:#02101a; left:440px; top:60px; width:320px; height:240px;">
+          <span class="frame-label">Kevin Powell</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="weekly_geeks/kevin-powell.png" alt="Kevin Powell" loading="lazy">
+              <div class="fc-post-tag">// talk 01</div>
+              <div class="fc-post-title">Kevin Powell</div>
+              <div class="fc-post-body">De CSS-goeroe over moderne layout: grid, container queries en :has(). CSS kan veel meer dan je denkt.</div>
+              <div class="fc-post-footer"><div class="fc-post-date">css</div><div class="fc-post-tags"><span class="fc-pill">css</span></div></div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="g-bremer" data-section="Talks" data-type="post" style="--accent:#a78bfa; --bg:#0f0b1e; left:780px; top:60px; width:320px; height:240px;">
+          <span class="frame-label">Nadieh Bremer</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="weekly_geeks/nadieh-bremer.png" alt="Nadieh Bremer" loading="lazy">
+              <div class="fc-post-tag">// talk 02</div>
+              <div class="fc-post-title">Nadieh Bremer</div>
+              <div class="fc-post-body">Data-visualisatie als kunst. Hoe je van saaie cijfers iets maakt dat mensen wíllen bekijken.</div>
+              <div class="fc-post-footer"><div class="fc-post-date">data viz</div><div class="fc-post-tags"><span class="fc-pill">dataviz</span></div></div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="g-valkhof" data-section="Talks" data-type="post" style="--accent:#10b981; --bg:#02140e; left:1120px; top:60px; width:320px; height:240px;">
+          <span class="frame-label">Killian Valkhof</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="weekly_geeks/killian-valkhof.png" alt="Killian Valkhof" loading="lazy">
+              <div class="fc-post-tag">// talk 03</div>
+              <div class="fc-post-title">Killian Valkhof</div>
+              <div class="fc-post-body">De maker van Polypane over tools bouwen voor developers en hoe browsers beter kunnen.</div>
+              <div class="fc-post-footer"><div class="fc-post-date">tooling</div><div class="fc-post-tags"><span class="fc-pill">browsers</span></div></div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="g-ppk" data-section="Talks" data-type="post" style="--accent:#f59e0b; --bg:#140d00; left:440px; top:340px; width:320px; height:240px;">
+          <span class="frame-label">Peter-Paul Koch</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="weekly_geeks/peter-paul-koch.png" alt="Peter-Paul Koch" loading="lazy">
+              <div class="fc-post-tag">// talk 04</div>
+              <div class="fc-post-title">Peter-Paul Koch</div>
+              <div class="fc-post-body">De man achter QuirksMode over browser-compatibiliteit en de eigenwijsheid van het mobiele web.</div>
+              <div class="fc-post-footer"><div class="fc-post-date">compat</div><div class="fc-post-tags"><span class="fc-pill">browser</span></div></div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="g-binder" data-section="Talks" data-type="post" style="--accent:#f472b6; --bg:#1a0a12; left:780px; top:340px; width:320px; height:240px;">
+          <span class="frame-label">Nils Binder</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="weekly_geeks/nils-binder.png" alt="Nils Binder" loading="lazy">
+              <div class="fc-post-tag">// talk 05</div>
+              <div class="fc-post-title">Nils Binder</div>
+              <div class="fc-post-body">Creative coding en generatieve vormen. Code als penseel om beweging en toeval te ontwerpen.</div>
+              <div class="fc-post-footer"><div class="fc-post-date">creative dev</div><div class="fc-post-tags"><span class="fc-pill">generative</span></div></div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="g-leenheen" data-section="Talks" data-type="post" style="--accent:#fb7185; --bg:#1a0808; left:1120px; top:340px; width:320px; height:240px;">
+          <span class="frame-label">Niels Leenheen</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="weekly_geeks/niels-leenheen.png" alt="Niels Leenheen" loading="lazy">
+              <div class="fc-post-tag">// talk 06</div>
+              <div class="fc-post-title">Niels Leenheen</div>
+              <div class="fc-post-body">JavaScript tot het uiterste duwen — performance, hacks en wat de taal écht kan.</div>
+              <div class="fc-post-footer"><div class="fc-post-date">javascript</div><div class="fc-post-tags"><span class="fc-pill">js</span></div></div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="g-broersma" data-section="Talks" data-type="post" style="--accent:#34d399; --bg:#001a0e; left:440px; top:620px; width:320px; height:200px;">
+          <span class="frame-label">Robert Broersma</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="weekly_geeks/robert-broersma.png" alt="Robert Broersma" loading="lazy">
+              <div class="fc-post-tag">// talk 07</div>
+              <div class="fc-post-title">Robert Broersma</div>
+              <div class="fc-post-body">Creative front-end en CSS-art: tekenen met niks anders dan stylesheets.</div>
+              <div class="fc-post-footer"><div class="fc-post-date">css art</div><div class="fc-post-tags"><span class="fc-pill">css</span></div></div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="g-huijkman" data-section="Talks" data-type="post" style="--accent:#818cf8; --bg:#0a0b1a; left:780px; top:620px; width:320px; height:200px;">
+          <span class="frame-label">John Huijkman</span>
+          <div class="frame-inner">
+            <div class="fc-post">
+              <img class="fc-post-img" src="weekly_geeks/john-huijkman.png" alt="John Huijkman" loading="lazy">
+              <div class="fc-post-tag">// talk 08</div>
+              <div class="fc-post-title">John Huijkman</div>
+              <div class="fc-post-body">Design systemen in de praktijk: consistentie schaalbaar maken binnen een team.</div>
+              <div class="fc-post-footer"><div class="fc-post-date">design systems</div><div class="fc-post-tags"><span class="fc-pill">systems</span></div></div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PAGE: Leerdoelen -->
+      <section class="page" data-page="leerdoelen" data-name="Leerdoelen" data-w="1340" data-h="620">
+        <div class="section-label" data-section="Begin" style="left:60px;top:24px">// begin</div>
+        <div class="section-label" data-section="Midden" style="left:480px;top:24px">// midden</div>
+        <div class="section-label" data-section="Eind" style="left:900px;top:24px">// eind</div>
+
+        <div class="frame" data-id="ld-begin" data-section="Begin" data-type="goals" style="--accent:#f59e0b; --bg:#140d00; left:60px; top:60px; width:380px; height:480px;">
+          <span class="frame-label">Leerdoelen — Begin</span>
+          <div class="frame-inner">
+            <div class="fc-goals">
+              <div class="fc-post-tag">// minor wdd · het begin</div>
+              <div class="fc-goals-title">Begin</div>
+              <div class="goal-list">
+                <div class="goal"><div class="goal-top"><span class="goal-name">Interactie</span><span class="goal-status" style="color:#10b981;background:#10b9811f">Voltooid</span></div><div class="goal-text">Mijn websites interactiever maken — 3D, scroll-animaties, gamification.</div></div>
+                <div class="goal"><div class="goal-top"><span class="goal-name">UX</span><span class="goal-status" style="color:#f59e0b;background:#f59e0b1f">Bezig</span></div><div class="goal-text">Gebruiksvriendelijkere interfaces zodat gebruikers niet vastlopen.</div></div>
+                <div class="goal"><div class="goal-top"><span class="goal-name">Samenwerken</span><span class="goal-status" style="color:#f59e0b;background:#f59e0b1f">Bezig</span></div><div class="goal-text">Mijn ideeën duidelijker overbrengen, zodat ik beter samenwerk.</div></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="ld-midden" data-section="Midden" data-type="goals" style="--accent:#38bdf8; --bg:#02101a; left:480px; top:60px; width:380px; height:480px;">
+          <span class="frame-label">Leerdoelen — Midden</span>
+          <div class="frame-inner">
+            <div class="fc-goals">
+              <div class="fc-post-tag">// minor wdd · halverwege</div>
+              <div class="fc-goals-title">Midden</div>
+              <div class="goal-list">
+                <div class="goal"><div class="goal-top"><span class="goal-name">Interactie</span><span class="goal-status" style="color:#38bdf8;background:#38bdf81f">Bezig</span></div><div class="goal-text">Eerste scroll-animaties werken; nu verdiepen in WebGL / Three.js.</div></div>
+                <div class="goal"><div class="goal-top"><span class="goal-name">UX</span><span class="goal-status" style="color:#38bdf8;background:#38bdf81f">Bezig</span></div><div class="goal-text">Usability-tests gedaan bij HCD en de inzichten toegepast.</div></div>
+                <div class="goal"><div class="goal-top"><span class="goal-name">Samenwerken</span><span class="goal-status" style="color:#38bdf8;background:#38bdf81f">Bezig</span></div><div class="goal-text">De hackathon liet zien waar mijn communicatie scherper kan.</div></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+
+        <div class="frame" data-id="ld-eind" data-section="Eind" data-type="goals" style="--accent:#34d399; --bg:#001a0e; left:900px; top:60px; width:380px; height:480px;">
+          <span class="frame-label">Leerdoelen — Eind</span>
+          <div class="frame-inner">
+            <div class="fc-goals">
+              <div class="fc-post-tag">// minor wdd · het einde</div>
+              <div class="fc-goals-title">Eind</div>
+              <div class="goal-list">
+                <div class="goal"><div class="goal-top"><span class="goal-name">Datavisualisatie</span><span class="goal-status" style="color:#34d399;background:#34d3991f">In progress</span></div><div class="goal-text">Data visueel aantrekkelijk weergeven voor snellere inzichten.</div></div>
+                <div class="goal"><div class="goal-top"><span class="goal-name">UX</span><span class="goal-status" style="color:#34d399;background:#34d3991f">In progress</span></div><div class="goal-text">Gebruiksvriendelijkere interfaces maken zodat gebruikers het maximale halen.</div></div>
+                <div class="goal"><div class="goal-top"><span class="goal-name">Samenwerken</span><span class="goal-status" style="color:#34d399;background:#34d3991f">In progress</span></div><div class="goal-text">Ideeën helder verwoorden om beter in een team te functioneren.</div></div>
+              </div>
+            </div>
+            <div class="elt-layer"></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+    <svg id="overlaySvg"></svg>
+    <div id="commentsLayer"></div>
+    <div id="cursorsLayer"></div>
   </div>
 
   <!-- RIGHT PANEL -->
   <div class="panel-right" id="rightPanel">
+    <input class="state-input" type="radio" name="itab" id="itab-design" checked/>
+    <input class="state-input" type="radio" name="itab" id="itab-proto"/>
     <div class="insp-tabs">
-      <div class="insp-tab active">Design</div>
-      <div class="insp-tab">Prototype</div>
+      <label class="insp-tab" for="itab-design">Design</label>
+      <label class="insp-tab" for="itab-proto">Prototype</label>
     </div>
     <div id="inspBody"></div>
+    <div id="protoPanel">
+      <div class="insp-section">
+        <div class="insp-title">Prototype</div>
+        <div style="font-size:11px;color:var(--text-2);line-height:1.6">De blauwe pijlen tonen de aanbevolen leesvolgorde door deze pagina — van frame naar frame, als een klikbare flow.</div>
+      </div>
+      <div class="insp-section">
+        <div class="insp-title">Interactie</div>
+        <div class="field-grid">
+          <div class="field"><span class="f-key">▸</span><span class="f-val">On tap</span></div>
+          <div class="field"><span class="f-key">→</span><span class="f-val">Navigate</span></div>
+        </div>
+      </div>
+      <div class="insp-section">
+        <div class="insp-title">Presenteren</div>
+        <button class="export-btn primary" onclick="startPresent()">▶ Start flow</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -445,7 +639,7 @@ svg { display:block; }
 <!-- ───────── PRESENT MODE ───────── -->
 <div class="present" id="present">
   <div class="present-top">
-    <div><span class="pt-name" id="presentName">Cover</span><span class="pt-sub" id="presentPage">Blog canvas</span></div>
+    <div><span class="pt-name" id="presentName">Cover</span><span class="pt-sub" id="presentPage"></span></div>
     <div class="pt-right">
       <span class="present-count" id="presentCount">1 / 1</span>
       <button class="present-btn" title="Vorige (←)" onclick="presentStep(-1)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg></button>
@@ -461,664 +655,237 @@ svg { display:block; }
   </div>
 </div>
 
-<!-- ───────── DETAIL PAGE ───────── -->
-<div class="detail" id="detail">
+<!-- ───────── DETAIL PAGES (CSS :target) ───────── -->
+<article class="detail" id="d-vak-css" style="--accent:#38bdf8; --bg:#02101a">
   <div class="detail-grid"></div>
   <div class="detail-top">
-    <button class="detail-back" onclick="closeDetail()">
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg>
-      Terug naar canvas
-    </button>
-    <div class="detail-crumb" id="detailCrumb"></div>
-    <button class="detail-close" onclick="closeDetail()" title="Sluiten (Esc)">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg>
-    </button>
+    <a class="detail-back" href="#"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg> Terug naar canvas</a>
+    <div class="detail-crumb">Vakken &amp; Projecten / <b>CSS to the Rescue</b></div>
+    <a class="detail-close" href="#" title="Sluiten (Esc)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
   </div>
-  <div class="detail-scroll" id="detailScroll">
-    <div class="dd-frame-label" id="detailLabel"></div>
-    <div class="detail-doc" id="detailDoc"></div>
+  <div class="detail-scroll">
+    <div class="dd-frame-label">CSS to the Rescue</div>
+    <div class="detail-doc">
+      <img class="dd-hero-img" src="projects-img/css.png" alt="CSS to the Rescue">
+      <div class="dd-hero">
+        <div class="dd-hero-glow"></div>
+        <div class="dd-tag">// vak 01</div>
+        <div class="dd-title">CSS to the Rescue</div>
+        <div class="dd-intro">De uitdaging: los interactie en layout op zonder ook maar één regel JavaScript. CSS bleek veel meer te kunnen dan ik dacht.</div>
+        <span class="dd-cta is-soon" title="Link volgt">Bekijk live site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 5h5v5M19 5l-9 9M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/></svg></span>
+      </div>
+      <div class="dd-meta">
+        <div class="dd-meta-item"><span class="dd-meta-k">Vak</span><span class="dd-meta-v">CSS to the Rescue</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Thema</span><span class="dd-meta-v">Alles met CSS</span></div>
+      </div>
+      <div class="dd-body">
+        <div class="dd-section"><div class="dd-h">Wat ik deed</div><div class="dd-p">Werken met moderne CSS — grid, custom properties, :has(), en pseudo-elementen voor interactie die normaal in JS zou zitten.</div></div>
+        <div class="dd-section"><div class="dd-h">Nieuwe inzichten</div><div class="dd-p">✎ Vul hier je eigen reflectie aan.</div></div>
+        <div class="dd-tags"><span class="dd-pill">css</span><span class="dd-pill">no-js</span></div>
+      </div>
+    </div>
   </div>
-</div>
+</article>
 
-<script>
-/* ───────── PAGES DATA ───────── */
-const PAGES = {
-  blog: { name:'Blog canvas', w:1500, h:1280, frames:[
-    { id:'cover', label:'Cover', x:60, y:60, w:500, h:380, type:'cover',
-      section:'Intro', accentColor:'#a78bfa', bgColor:'#0f0b1e',
-      tag:'// meesterschap blog · 2025–2026', title:'Mitchell\nScholte',
-      sub:'Web Design & Development minor\nHvA CMD · Amsterdam',
-      meta:'sprint 0 · hackathon · weekly nerd · meesterproef' },
-    { id:'sprint0', label:'Sprint 0 — Reflectie', x:620, y:60, w:360, h:380, type:'post',
-      section:'Sprint 0', accentColor:'#f59e0b', bgColor:'#0f0a00', link:'sprint-0.html',
-      tag:'// sprint 0 · feb 2026', title:'De basis\nleggen',
-      body:'Waar begin je als je alles nog moet leren? Sprint 0 is dat eerste moment van oriëntatie — wie ben je als designer-developer, wat wil je halen uit de minor?\n\nMijn plan: elke week iets nieuws proberen, ook als het mislukt.',
-      date:'12 feb 2026', pills:[{l:'reflectie',c:'#f59e0b',b:'#1a1200'},{l:'planning',c:'#f59e0b',b:'#1a1200'}] },
-    { id:'meesterproef', label:'Meesterproef — Intro', x:1040, y:60, w:360, h:760, type:'cover',
-      section:'Meesterproef', accentColor:'#3b82f6', bgColor:'#020c1a', link:'meesterproef.html',
-      tag:'// meesterproef · jun 2026', title:'Groot\nProject',
-      sub:'Het eindproject.\nEen echt team,\neen echte opdrachtgever,\neen echte deadline.',
-      meta:'deadline 19 juni 2026' },
-    { id:'wn1', label:'Weekly Nerd #1 — Vasilis', x:60, y:500, w:340, h:300, type:'post',
-      section:'Weekly Nerd', accentColor:'#8b5cf6', bgColor:'#0f0b1e', link:'weekly-nerd-template.html',
-      tag:'// weekly nerd · sessie 01', title:'Vasilis over\nweird web',
-      body:'Wat als het web niet hoeft te werken zoals verwacht? Vasilis liet zien hoe je het medium zelf kunt bevragen. Geen templates — gewoon de browser en een idee.',
-      date:'feb 2026', pills:[{l:'css',c:'#8b5cf6',b:'#0f0b1e'},{l:'browser',c:'#8b5cf6',b:'#0f0b1e'}] },
-    { id:'hackathon', label:'Hackathon — Verslag', x:460, y:500, w:400, h:300, type:'post',
-      section:'Hackathon', accentColor:'#10b981', bgColor:'#021a0e', link:'hackathon.html',
-      tag:'// hackathon · mrt 2026', title:'Bouwen\nonder druk',
-      body:'Twee dagen, één team, één probleem. Wat we maakten was niet perfect — maar het werkte. We leerden meer in 48 uur dan in weken college.',
-      date:'26 mrt 2026', pills:[{l:'team',c:'#10b981',b:'#021a0e'},{l:'sprint',c:'#10b981',b:'#021a0e'}] },
-    { id:'wn2', label:'Weekly Nerd #2 — Jad', x:60, y:860, w:300, h:280, type:'post',
-      section:'Weekly Nerd', accentColor:'#8b5cf6', bgColor:'#0f0b1e',
-      tag:'// weekly nerd · sessie 02', title:'Jad over\naccessibility',
-      body:'Toegankelijkheid is geen feature — het is de basis. Semantische HTML is meer dan een best practice: het is respect voor je gebruiker.',
-      date:'mrt 2026', pills:[{l:'a11y',c:'#8b5cf6',b:'#0f0b1e'}] },
-    { id:'wn3', label:'Weekly Nerd #3', x:420, y:860, w:260, h:280, type:'wip',
-      section:'Weekly Nerd', accentColor:'#444', bgColor:'#141414', wipLabel:'Nog niet geschreven' },
-    { id:'geek', label:'Weekly Geek →', x:740, y:500, w:240, h:280, type:'wip',
-      section:'Weekly Geek', accentColor:'#f472b6', bgColor:'#1a0a12', wipLabel:'Zie pagina Weekly Geeks' },
-    { id:'gesprek1', label:'Gesprek 1 — Reflectie', x:740, y:840, w:240, h:200, type:'post',
-      section:'Gesprekken', accentColor:'#34d399', bgColor:'#001a0e', link:'gesprekken/gesprek-1.html',
-      tag:'// gesprek 01', title:'Gesprek 1', body:'Reflectie na het eerste begeleidingsgesprek.', date:'2026', pills:[{l:'reflectie',c:'#34d399',b:'#001a0e'}] },
-    { id:'gesprek2', label:'Gesprek 2 — Reflectie', x:740, y:1060, w:240, h:160, type:'post',
-      section:'Gesprekken', accentColor:'#34d399', bgColor:'#001a0e', link:'gesprekken/gesprek-2.html',
-      tag:'// gesprek 02', title:'Gesprek 2', body:'Reflectie na gesprek twee.', date:'2026', pills:[{l:'reflectie',c:'#34d399',b:'#001a0e'}] },
-  ]},
-
-  over: { name:'Over mij', w:1120, h:920, frames:[
-    { id:'about-cover', label:'Over mij', x:60, y:60, w:520, h:440, type:'cover',
-      section:'Profiel', accentColor:'#a78bfa', bgColor:'#0f0b1e',
-      tag:'// over mij', title:'Hoi, ik ben\nMitchell',
-      sub:'CMD-student aan de HvA.\nDesign × code, met een\nvoorliefde voor interactie.',
-      meta:'front-end · interactie · creative development' },
-    { id:'about-who', label:'Wie ben ik', x:620, y:60, w:440, h:280, type:'post',
-      section:'Profiel', accentColor:'#38bdf8', bgColor:'#02101a',
-      tag:'// achtergrond', title:'Wie ben ik?',
-      body:'Ik ben Mitchell Scholte, student Communication & Multimedia Design. In de minor Web Design & Development zoek ik de grens op tussen wat mooi is en wat werkt.\n\nLiefst bouw ik dingen die je voelt, niet alleen ziet.',
-      date:'CMD · HvA', pills:[{l:'cmd',c:'#38bdf8',b:'#02101a'},{l:'amsterdam',c:'#38bdf8',b:'#02101a'}] },
-    { id:'about-do', label:'Wat ik doe', x:620, y:380, w:440, h:280, type:'post',
-      section:'Profiel', accentColor:'#10b981', bgColor:'#02140e',
-      tag:'// skills', title:'Wat ik doe',
-      body:'Front-end development met HTML, CSS en JavaScript. Interactie- en motion design. Steeds vaker ook 3D en data-visualisatie.\n\nIk werk graag iteratief: bouwen, testen, verbeteren.',
-      date:'toolbox', pills:[{l:'html/css',c:'#10b981',b:'#02140e'},{l:'js',c:'#10b981',b:'#02140e'},{l:'three.js',c:'#10b981',b:'#02140e'}] },
-    { id:'about-drive', label:'Wat mij drijft', x:60, y:540, w:520, h:300, type:'post',
-      section:'Profiel', accentColor:'#f59e0b', bgColor:'#140d00',
-      tag:'// motivatie', title:'Wat mij drijft',
-      body:'Het web is een medium dat je kunt buigen. Ik wil weten hoe ver dat gaat — animatie, gamification, dingen die verrassen.\n\nDeze blog is mijn logboek: elke week iets nieuws, ook als het mislukt. Falen hoort erbij.',
-      date:'doel van de minor', pills:[{l:'interactie',c:'#f59e0b',b:'#140d00'},{l:'experiment',c:'#f59e0b',b:'#140d00'}] },
-  ]},
-
-  vakken: { name:'Vakken & Projecten', w:1840, h:700, frames:[
-    { id:'vak-cover', label:'Overzicht', x:60, y:60, w:300, h:570, type:'cover',
-      section:'Minor WDD', accentColor:'#a78bfa', bgColor:'#0f0b1e',
-      tag:'// minor wdd', title:'Vakken\n&\nProjecten',
-      sub:'Vier vakken die\nhet web uitpluizen,\ndrie projecten\nwaarin het samenkomt.',
-      meta:'css · browser · hcd · api' },
-
-    /* ───── VAKKEN (2×2) ───── */
-    { id:'vak-css', label:'CSS to the Rescue', x:400, y:60, w:320, h:270, type:'post',
-      section:'Vakken', accentColor:'#38bdf8', bgColor:'#02101a',
-      tag:'// vak 01', title:'CSS to\nthe Rescue',
-      body:'Problemen oplossen met alleen CSS — geen JavaScript. Leren hoe krachtig en creatief het platform zelf is.',
-      date:'nieuwe inzichten', pills:[{l:'css',c:'#38bdf8',b:'#02101a'},{l:'no-js',c:'#38bdf8',b:'#02101a'}],
-      detail:{ meta:[{k:'Vak',v:'CSS to the Rescue'},{k:'Thema',v:'Alles met CSS'}],
-        intro:'De uitdaging: los interactie en layout op zonder ook maar één regel JavaScript. CSS bleek veel meer te kunnen dan ik dacht.',
-        sections:[
-          {h:'Wat ik deed', p:'Werken met moderne CSS — grid, custom properties, :has(), en pseudo-elementen voor interactie die normaal in JS zou zitten.'},
-          {h:'Nieuwe inzichten', p:'✎ Vul hier je eigen reflectie aan.'},
-        ]}},
-    { id:'vak-browser', label:'Browser Technologies', x:740, y:60, w:320, h:270, type:'post',
-      section:'Vakken', accentColor:'#f59e0b', bgColor:'#140d00',
-      tag:'// vak 02', title:'Browser\nTechnologies',
-      body:'JavaScript, APIs en hoe de browser écht werkt. Van fetch tot de event loop — onder de motorkap kijken.',
-      date:'nieuwe inzichten', pills:[{l:'javascript',c:'#f59e0b',b:'#140d00'},{l:'apis',c:'#f59e0b',b:'#140d00'}],
-      detail:{ meta:[{k:'Vak',v:'Browser Technologies'},{k:'Thema',v:'JavaScript & de browser'}],
-        intro:'Dit vak ging over wat er écht gebeurt als je een pagina opent. Geen frameworks — gewoon de browser, JavaScript en de API\'s die het platform je geeft.',
-        sections:[
-          {h:'Wat ik deed', p:'Werken met de DOM, data ophalen met fetch en async/await, en de event loop leren begrijpen. Dingen die "vanzelf" leken te werken, vielen ineens op hun plek.'},
-          {h:'Nieuwe inzichten', p:'✎ Vul hier je eigen reflectie aan: wat verraste je, wat ging mis, wat neem je mee?'},
-        ]}},
-    { id:'vak-hcd', label:'HCD — VoiceReader', x:400, y:360, w:320, h:270, type:'post',
-      section:'Vakken', accentColor:'#34d399', bgColor:'#001a0e',
-      tag:'// vak 03 · hcd', title:'Human\nCentered Design',
-      body:'De gebruiker centraal. Mijn project: VoiceReader — een Chrome-extensie die een screenreader emotionele, genrebewuste stemmen geeft, ontworpen samen met een blinde gebruiker.',
-      date:'project: voicereader', pills:[{l:'voicereader',c:'#34d399',b:'#001a0e'},{l:'a11y',c:'#34d399',b:'#001a0e'},{l:'ai',c:'#34d399',b:'#001a0e'}],
-      detail:{ meta:[{k:'Vak',v:'Human Centered Design'},{k:'Project',v:'VoiceReader'},{k:'Type',v:'Chrome-extensie'},{k:'Getest met',v:'Ihab (blind) · 4 weken'},{k:'AI',v:'ElevenLabs · Gemini'}],
-        intro:'VoiceReader is een Chrome-extensie gebouwd rond de behoeften van één echte gebruiker: Ihab is blind en gebruikt de hele dag een screenreader. Zijn grootste frustratie was niet de snelheid, maar de vlakke, emotieloze stem. VoiceReader detecteert met AI het genre van een pagina en leest die voor in een bijpassende, emotionele stem.',
-        sections:[
-          {h:'De gebruiker centraal', p:'Het hele ontwerp is samen met Ihab tot stand gekomen — een blinde hoofdgebruiker. Vier weken lang testen op mijn eigen laptop, met stemstijlen afgestemd op zijn interesses. Niet ontwerpen vóór, maar mét.'},
-          {h:'Hoe het werkt', p:'AI bepaalt het genre van een pagina; ElevenLabs TTS leest die voor met één stem per genre en stijl. Zo krijgt een verhaal een andere voordracht dan een nieuwsartikel.'},
-          {h:'De techniek', p:'De eerste test met Ihab leidde tot genre-detectie via Claude. Toen Claudes credits op waren ben ik overgestapt naar Google Gemini en heb ik alles teruggebracht naar de extensie zelf.'},
-          {h:'Wat ik leerde', p:'HCD is ontwerpen mét je gebruiker, niet voor een aanname. Verder technisch: Gemini\'s REST-API gebruikt camelCase en de modelnaam verschilt per API-versie, dus auto-discovery van het model scheelt gedoe. En een echte accessibility-first interface bouwen is iets anders dan "toegankelijk genoeg".'},
-        ]}},
-    { id:'vak-api', label:'API — CMD Casino', x:740, y:360, w:320, h:270, type:'post',
-      section:'Vakken', accentColor:'#fbbf24', bgColor:'#1a1203',
-      tag:'// vak 04 · api', title:'API',
-      body:'Data ophalen, verwerken en tonen via API\'s. Mijn project werd CMD Casino: een full-stack multiplayer casino in Astro.',
-      date:'project: cmd casino', pills:[{l:'websockets',c:'#fbbf24',b:'#1a1203'},{l:'mollie api',c:'#fbbf24',b:'#1a1203'},{l:'wikipedia api',c:'#fbbf24',b:'#1a1203'}],
-      detail:{ meta:[{k:'Vak',v:'API'},{k:'Project',v:'CMD Casino'},{k:'Stack',v:'Astro · Node.js · MongoDB'},{k:'Realtime',v:'WebSockets'},{k:'Betalingen',v:'Mollie (iDEAL)'},{k:'Hosting',v:'Render'}],
-        intro:'Voor het API-vak bouwde ik CMD Casino: een full-stack multiplayer casino. Spelers maken een account aan, verdienen credits en spelen real-time Blackjack tegen elkaar. API-gedreven in Astro met één content-API en twee web-API\'s, gedeployed op Render.',
-        sections:[
-          {h:'De API\'s', p:'Een content-API serveert de in-game spelregelpagina\'s, gevoed door de Wikipedia-API. De Mollie-API regelt iDEAL-betalingen: Mollie bevestigt een betaling door een webhook op mijn server aan te roepen.'},
-          {h:'Real-time multiplayer', p:'Via WebSockets spelen meerdere mensen aan dezelfde Blackjack-tafel, live. Een pratende dealer maakt de tafel af.'},
-          {h:'Server-authoritative & anti-cheat', p:'Alle spellogica draait op de server, niet in de browser. Daardoor kan een speler de kaarten niet manipuleren — de client vraagt alleen, de server beslist.'},
-          {h:'Wat ik leerde', p:'Wikipedia-artikelen zijn enorm en vol ruis, dus ik cache ze en roep de API nooit twee keer aan voor hetzelfde artikel. Verder: webhooks afhandelen, consistent camelCase aanhouden zoals de API doet, en deployen op Render. API-kosten zijn een echte drempel — caching is dan niet luxe maar noodzaak.'},
-        ]}},
-
-    /* ───── PROJECTEN (kolom) ───── */
-    { id:'proj-sprint0', label:'Sprint 0', x:1100, y:60, w:320, h:270, type:'post',
-      section:'Projecten', accentColor:'#f59e0b', bgColor:'#140d00',
-      tag:'// project · feb 2026', title:'Sprint 0',
-      body:'De introductie-opdracht: in 9 dagen een one-page website over jezelf. Ik koos voor 3D met Three.js — en eindigde met een interactief Monopoly-bord over mijn leven.',
-      date:'3–11 feb 2026', pills:[{l:'three.js',c:'#f59e0b',b:'#140d00'},{l:'webgl',c:'#f59e0b',b:'#140d00'},{l:'3d',c:'#f59e0b',b:'#140d00'}],
-      detail:{ meta:[{k:'Opdracht',v:'Website over jezelf'},{k:'Periode',v:'3–11 feb 2026'},{k:'Technieken',v:'Three.js · WebGL'}],
-        intro:'De introductie-opdracht: maak in 9 dagen een one-page website over jezelf, met je leerdoelen erin. Ik wilde iets nieuws leren en koos voor 3D — Three.js en WebGL. Wat begon als een 3D-portfolio werd uiteindelijk een interactief Monopoly-speelbord over mijn leven.',
-        sections:[
-          {h:'Het 3D-portfolio', p:'Three.js leren door te doen: .glb-modellen van Sketchfab en Poly, en leren werken met camera, lichten, canvas en het comprimeren van modellen. Daarna interactie op scroll — een tennisracket dat een slag maakt en een auto die het scherm in rijdt met draaiende wielen. Veel wiskunde, want het draaipunt van het racket zat in het midden in plaats van aan het uiteinde.'},
-          {h:'De pivot naar Monopoly', p:'Een nieuw concept: een speelbord waarbij de straten thema\'s uit mijn leven zijn — sport, studie, hobby, games, muziek. Met 3D-dobbelstenen, een lopende pion en speelkaarten die hun inhoud uit een eigen API halen.'},
-          {h:'Wat ik leerde', p:'De GLTFLoader gaf de hele dag 404\'s, dus ben ik teruggevallen op simpele Three.js-vormen — niet blijven hangen, doorbouwen. Het eureka-moment: niet het bord draaien bij een bocht, maar de camera. En ik bouwde een eigen API van ~260 regels toen die van de opleiding nergens te vinden was. Leerdoelen: ontwerpen met 3D, betere animaties met wow-factor, en interactie waarbij de gebruiker voelt dat híj de site bestuurt.'},
-        ]}},
-    { id:'proj-hackathon', label:'Hackathon', x:1100, y:360, w:320, h:270, type:'post',
-      section:'Projecten', accentColor:'#10b981', bgColor:'#021a0e',
-      tag:'// project · mrt 2026', title:'Hackathon',
-      body:'Twee dagen, één team, één probleem. Bouwen onder druk — en in 48 uur meer leren dan in weken college.',
-      date:'26 mrt 2026', pills:[{l:'team',c:'#10b981',b:'#021a0e'},{l:'48 uur',c:'#10b981',b:'#021a0e'}],
-      detail:{ meta:[{k:'Type',v:'Teamproject'},{k:'Duur',v:'48 uur'},{k:'Periode',v:'mrt 2026'}],
-        intro:'Een intensieve sprint van twee dagen: met een team van scratch naar een werkend prototype.',
-        sections:[
-          {h:'Wat we maakten', p:'✎ Beschrijf hier het probleem, jullie oplossing en jouw rol in het team.'},
-          {h:'Wat ik leerde', p:'✎ Wat nam je mee uit het werken onder druk?'},
-        ]}},
-    { id:'proj-meester', label:'Meesterproef', x:1460, y:60, w:320, h:570, type:'post',
-      section:'Projecten', accentColor:'#3b82f6', bgColor:'#020c1a',
-      tag:'// project · jun 2026', title:'Meester\nproef',
-      body:'Het eindproject waarin alles samenkomt: een echt team, een echte opdrachtgever en een echte deadline.\n\nAlles uit de vakken — CSS, browser, HCD en API\'s — komt hier bij elkaar in één echt product.\n\nDe finale van de minor.',
-      date:'deadline 19 jun 2026', pills:[{l:'eindproject',c:'#3b82f6',b:'#020c1a'},{l:'team',c:'#3b82f6',b:'#020c1a'}],
-      detail:{ meta:[{k:'Type',v:'Eindproject'},{k:'Deadline',v:'19 juni 2026'}],
-        intro:'De afsluiting van de minor: alles wat je geleerd hebt samenbrengen in één project, met een echt team en een echte opdrachtgever.',
-        sections:[
-          {h:'Waar het over gaat', p:'✎ Vul hier aan zodra je project loopt: opdrachtgever, vraagstuk en jouw rol in het team.'},
-          {h:'Wat ik wil bereiken', p:'✎ Jouw doelen voor de meesterproef.'},
-        ]}},
-  ]},
-
-  geeks: { name:'Weekly Geeks', w:1500, h:900, frames:[
-    { id:'geek-cover', label:'Weekly Geeks', x:60, y:60, w:340, h:760, type:'cover',
-      section:'Weekly Geek', accentColor:'#f472b6', bgColor:'#1a0a12',
-      tag:'// weekly geek · 8 talks', title:'Weekly\nGeeks',
-      sub:'Acht sprekers,\nacht perspectieven\nop het web.\nKorte notities per talk.',
-      meta:'doorlopend · elke week een nieuwe' },
-    { id:'g-powell', label:'Kevin Powell', x:440, y:60, w:320, h:240, type:'post',
-      section:'Talks', accentColor:'#38bdf8', bgColor:'#02101a',
-      tag:'// talk 01', title:'Kevin Powell',
-      body:'De CSS-goeroe over moderne layout: grid, container queries en :has(). CSS kan veel meer dan je denkt.',
-      date:'css', pills:[{l:'css',c:'#38bdf8',b:'#02101a'}] },
-    { id:'g-bremer', label:'Nadieh Bremer', x:780, y:60, w:320, h:240, type:'post',
-      section:'Talks', accentColor:'#a78bfa', bgColor:'#0f0b1e',
-      tag:'// talk 02', title:'Nadieh Bremer',
-      body:'Data-visualisatie als kunst. Hoe je van saaie cijfers iets maakt dat mensen wíllen bekijken.',
-      date:'data viz', pills:[{l:'dataviz',c:'#a78bfa',b:'#0f0b1e'}] },
-    { id:'g-valkhof', label:'Killian Valkhof', x:1120, y:60, w:320, h:240, type:'post',
-      section:'Talks', accentColor:'#10b981', bgColor:'#02140e',
-      tag:'// talk 03', title:'Killian Valkhof',
-      body:'De maker van Polypane over tools bouwen voor developers en hoe browsers beter kunnen.',
-      date:'tooling', pills:[{l:'browsers',c:'#10b981',b:'#02140e'}] },
-    { id:'g-ppk', label:'Peter-Paul Koch', x:440, y:340, w:320, h:240, type:'post',
-      section:'Talks', accentColor:'#f59e0b', bgColor:'#140d00',
-      tag:'// talk 04', title:'Peter-Paul Koch',
-      body:'De man achter QuirksMode over browser-compatibiliteit en de eigenwijsheid van het mobiele web.',
-      date:'compat', pills:[{l:'browser',c:'#f59e0b',b:'#140d00'}] },
-    { id:'g-binder', label:'Nils Binder', x:780, y:340, w:320, h:240, type:'post',
-      section:'Talks', accentColor:'#f472b6', bgColor:'#1a0a12',
-      tag:'// talk 05', title:'Nils Binder',
-      body:'Creative coding en generatieve vormen. Code als penseel om beweging en toeval te ontwerpen.',
-      date:'creative dev', pills:[{l:'generative',c:'#f472b6',b:'#1a0a12'}] },
-    { id:'g-leenheen', label:'Niels Leenheen', x:1120, y:340, w:320, h:240, type:'post',
-      section:'Talks', accentColor:'#fb7185', bgColor:'#1a0808',
-      tag:'// talk 06', title:'Niels Leenheen',
-      body:'JavaScript tot het uiterste duwen — performance, hacks en wat de taal écht kan.',
-      date:'javascript', pills:[{l:'js',c:'#fb7185',b:'#1a0808'}] },
-    { id:'g-broersma', label:'Robert Broersma', x:440, y:620, w:320, h:200, type:'post',
-      section:'Talks', accentColor:'#34d399', bgColor:'#001a0e',
-      tag:'// talk 07', title:'Robert Broersma',
-      body:'Creative front-end en CSS-art: tekenen met niks anders dan stylesheets.',
-      date:'css art', pills:[{l:'css',c:'#34d399',b:'#001a0e'}] },
-    { id:'g-huijkman', label:'John Huijkman', x:780, y:620, w:320, h:200, type:'post',
-      section:'Talks', accentColor:'#818cf8', bgColor:'#0a0b1a',
-      tag:'// talk 08', title:'John Huijkman',
-      body:'Design systemen in de praktijk: consistentie schaalbaar maken binnen een team.',
-      date:'design systems', pills:[{l:'systems',c:'#818cf8',b:'#0a0b1a'}] },
-  ]},
-
-  leerdoelen: { name:'Leerdoelen', w:1340, h:620, frames:[
-    { id:'ld-begin', label:'Leerdoelen — Begin', x:60, y:60, w:380, h:480, type:'goals',
-      section:'Begin', accentColor:'#f59e0b', bgColor:'#140d00',
-      tag:'// minor wdd · het begin', title:'Begin',
-      goals:[
-        { t:'Interactie', d:'Mijn websites interactiever maken — 3D, scroll-animaties, gamification.', s:'Voltooid', sc:'#10b981' },
-        { t:'UX', d:'Gebruiksvriendelijkere interfaces zodat gebruikers niet vastlopen.', s:'Bezig', sc:'#f59e0b' },
-        { t:'Samenwerken', d:'Mijn ideeën duidelijker overbrengen, zodat ik beter samenwerk.', s:'Bezig', sc:'#f59e0b' },
-      ]},
-    { id:'ld-midden', label:'Leerdoelen — Midden', x:480, y:60, w:380, h:480, type:'goals',
-      section:'Midden', accentColor:'#38bdf8', bgColor:'#02101a',
-      tag:'// minor wdd · halverwege', title:'Midden',
-      goals:[
-        { t:'Interactie', d:'Eerste scroll-animaties werken; nu verdiepen in WebGL / Three.js.', s:'Bezig', sc:'#38bdf8' },
-        { t:'UX', d:'Usability-tests gedaan bij HCD en de inzichten toegepast.', s:'Bezig', sc:'#38bdf8' },
-        { t:'Samenwerken', d:'De hackathon liet zien waar mijn communicatie scherper kan.', s:'Bezig', sc:'#38bdf8' },
-      ]},
-    { id:'ld-eind', label:'Leerdoelen — Eind', x:900, y:60, w:380, h:480, type:'goals',
-      section:'Eind', accentColor:'#34d399', bgColor:'#001a0e',
-      tag:'// minor wdd · het einde', title:'Eind',
-      goals:[
-        { t:'Datavisualisatie', d:'Data visueel aantrekkelijk weergeven voor snellere inzichten.', s:'In progress', sc:'#34d399' },
-        { t:'UX', d:'Gebruiksvriendelijkere interfaces maken zodat gebruikers het maximale halen.', s:'In progress', sc:'#34d399' },
-        { t:'Samenwerken', d:'Ideeën helder verwoorden om beter in een team te functioneren.', s:'In progress', sc:'#34d399' },
-      ]},
-  ]},
-};
-
-const SUBTITLES = {
-  blog:'meesterschap / blog — hva cmd', over:'profiel & motivatie',
-  vakken:'minor wdd — vakken', geeks:'8 talks', leerdoelen:'begin · midden · eind'
-};
-
-let currentPage = 'blog';
-let frames = PAGES[currentPage].frames;
-let TOTAL_W = PAGES[currentPage].w, TOTAL_H = PAGES[currentPage].h;
-
-let camX = 0, camY = 0, zoom = 0.78;
-let isPanning = false, panStart = {x:0,y:0}, camStart = {x:0,y:0};
-let tool = 'move', selectedId = null;
-const canvasEl = document.getElementById('canvas');
-const wrap = document.getElementById('canvasWrap');
-
-const ICON_FRAME = '<svg class="l-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 3v18M16 3v18M3 8h18M3 16h18"/></svg>';
-
-/* ───────── Frame content ───────── */
-function frameInnerHTML(f) {
-  if (f.type === 'cover') {
-    return `<div class="fc-cover">
-      <div class="fc-cover-glow" style="background:radial-gradient(ellipse at 20% 80%,${f.accentColor}33 0%,transparent 65%)"></div>
-      <div class="fc-cover-tag" style="color:${f.accentColor}">${f.tag}</div>
-      <div class="fc-cover-title" style="font-size:${f.w>400?44:24}px;color:${f.accentColor}">${f.title.replace(/\n/g,'<br>')}</div>
-      <div class="fc-cover-sub">${f.sub.replace(/\n/g,'<br>')}</div>
-      <div class="fc-cover-meta">${f.meta}</div></div>`;
-  }
-  if (f.type === 'post') {
-    return `<div class="fc-post">
-      <div class="fc-post-tag" style="color:${f.accentColor}">${f.tag}</div>
-      <div class="fc-post-title">${f.title.replace(/\n/g,'<br>')}</div>
-      <div class="fc-post-body">${f.body.replace(/\n/g,'<br><br>')}</div>
-      <div class="fc-post-footer">
-        <div class="fc-post-date">${f.date}</div>
-        <div class="fc-post-tags">${(f.pills||[]).map(p=>`<span class="fc-pill" style="color:${p.c};border-color:${p.c}44;background:${p.b}">${p.l}</span>`).join('')}</div>
-      </div></div>`;
-  }
-  if (f.type === 'goals') {
-    return `<div class="fc-goals">
-      <div class="fc-post-tag" style="color:${f.accentColor}">${f.tag}</div>
-      <div class="fc-goals-title" style="color:${f.accentColor}">${f.title}</div>
-      <div class="goal-list">${f.goals.map(g=>`
-        <div class="goal" style="border-left-color:${f.accentColor}">
-          <div class="goal-top"><span class="goal-name">${g.t}</span><span class="goal-status" style="color:${g.sc};background:${g.sc}1f">${g.s}</span></div>
-          <div class="goal-text">${g.d}</div>
-        </div>`).join('')}</div></div>`;
-  }
-  return `<div class="fc-wip"><div class="fc-wip-icon">⬚</div><div class="fc-wip-text">${f.wipLabel}</div></div>`;
-}
-
-/* ───────── Build canvas ───────── */
-function buildCanvas() {
-  canvasEl.innerHTML = '';
-  canvasEl.style.width = TOTAL_W + 'px';
-  canvasEl.style.height = TOTAL_H + 'px';
-
-  const sections = {};
-  frames.forEach(f => {
-    if (!sections[f.section]) sections[f.section] = {x:f.x, y:f.y};
-    else { sections[f.section].x = Math.min(sections[f.section].x, f.x); sections[f.section].y = Math.min(sections[f.section].y, f.y); }
-  });
-  Object.entries(sections).forEach(([name, pos]) => {
-    const lbl = document.createElement('div');
-    lbl.className = 'section-label';
-    lbl.style.cssText = `left:${pos.x}px;top:${pos.y - 36}px`;
-    lbl.textContent = '// ' + name.toLowerCase();
-    canvasEl.appendChild(lbl);
-  });
-
-  frames.forEach(f => {
-    const el = document.createElement('div');
-    el.className = 'frame'; el.id = 'frame-' + f.id;
-    el.style.cssText = `left:${f.x}px;top:${f.y}px;width:${f.w}px;height:${f.h}px`;
-    const lbl = document.createElement('div');
-    lbl.className = 'frame-label'; lbl.textContent = f.label;
-    el.appendChild(lbl);
-    const inner = document.createElement('div');
-    inner.className = 'frame-inner';
-    inner.style.background = f.bgColor;
-    if (f.type === 'wip') inner.style.border = `1px dashed ${f.accentColor}44`;
-    inner.innerHTML = frameInnerHTML(f);
-    el.appendChild(inner);
-    el.addEventListener('click', e => { e.stopPropagation(); selectFrame(f.id); });
-    el.addEventListener('dblclick', e => {
-      e.stopPropagation();
-      if (f.detail) openDetail(f);
-      else if (f.link) window.open(f.link, '_blank');
-    });
-    canvasEl.appendChild(el);
-  });
-
-  buildLayers();
-  buildMinimap();
-}
-
-function buildLayers() {
-  const list = document.getElementById('layersList');
-  list.innerHTML = '';
-  [...frames].reverse().forEach(f => {
-    const item = document.createElement('div');
-    item.className = 'layer-row'; item.id = 'layer-' + f.id;
-    item.innerHTML = `${ICON_FRAME}<span class="l-name">${f.label}</span>
-      <svg class="l-eye" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg>`;
-    item.addEventListener('click', () => { selectFrame(f.id); flyToFrame(f.id); });
-    list.appendChild(item);
-  });
-}
-
-function buildPagesList() {
-  const list = document.getElementById('pagesList');
-  list.innerHTML = '';
-  Object.entries(PAGES).forEach(([key, pg]) => {
-    const row = document.createElement('div');
-    row.className = 'page-row' + (key===currentPage ? ' active' : '');
-    row.innerHTML = `<svg class="page-check" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M2 6.5L5 9.5 10 3"/></svg>${pg.name}`;
-    row.addEventListener('click', () => switchPage(key));
-    list.appendChild(row);
-  });
-}
-
-function switchPage(key) {
-  if (!PAGES[key]) return;
-  currentPage = key;
-  frames = PAGES[key].frames;
-  TOTAL_W = PAGES[key].w; TOTAL_H = PAGES[key].h;
-  selectedId = null;
-  document.getElementById('fileName').textContent = 'Mitchell Scholte — ' + PAGES[key].name;
-  buildPagesList();
-  buildCanvas();
-  showPageProps();
-  fitAll();
-}
-
-function buildMinimap() {
-  const mm = document.getElementById('minimapFrames');
-  mm.innerHTML = '';
-  const mmW = 150, mmH = 96;
-  const sx = mmW / TOTAL_W, sy = mmH / TOTAL_H;
-  frames.forEach(f => {
-    const el = document.createElement('div');
-    el.className = 'minimap-frame';
-    el.style.cssText = `left:${f.x*sx}px;top:${f.y*sy}px;width:${f.w*sx}px;height:${f.h*sy}px;background:${f.accentColor}33;border:0.5px solid ${f.accentColor}66`;
-    mm.appendChild(el);
-  });
-}
-
-function selectFrame(id) {
-  selectedId = id;
-  document.querySelectorAll('.frame').forEach(el => el.classList.remove('selected'));
-  document.querySelectorAll('.layer-row').forEach(el => el.classList.remove('selected'));
-  if (id) {
-    document.getElementById('frame-'+id)?.classList.add('selected');
-    document.getElementById('layer-'+id)?.classList.add('selected');
-    showProps(frames.find(fr => fr.id === id));
-  } else {
-    showPageProps();
-  }
-}
-
-function showPageProps() {
-  document.getElementById('inspBody').innerHTML = `
-    <div class="insp-section">
-      <div class="insp-title">Pagina · ${PAGES[currentPage].name} <span class="add">···</span></div>
-      <div class="color-row">
-        <div class="swatch" style="background:#1e1e1e"></div>
-        <span class="color-hex">1E1E1E</span>
-        <span class="color-op">100%</span>
-        <svg class="color-eye" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg>
+<article class="detail" id="d-vak-browser" style="--accent:#f59e0b; --bg:#140d00">
+  <div class="detail-grid"></div>
+  <div class="detail-top">
+    <a class="detail-back" href="#"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg> Terug naar canvas</a>
+    <div class="detail-crumb">Vakken &amp; Projecten / <b>Browser Technologies</b></div>
+    <a class="detail-close" href="#" title="Sluiten (Esc)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  </div>
+  <div class="detail-scroll">
+    <div class="dd-frame-label">Browser Technologies</div>
+    <div class="detail-doc">
+      <img class="dd-hero-img" src="projects-img/ns.png" alt="Browser Technologies">
+      <div class="dd-hero">
+        <div class="dd-hero-glow"></div>
+        <div class="dd-tag">// vak 02</div>
+        <div class="dd-title">Browser Technologies</div>
+        <div class="dd-intro">Dit vak ging over wat er écht gebeurt als je een pagina opent. Geen frameworks — gewoon de browser, JavaScript en de API's die het platform je geeft.</div>
+        <span class="dd-cta is-soon" title="Link volgt">Bekijk live site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 5h5v5M19 5l-9 9M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/></svg></span>
+      </div>
+      <div class="dd-meta">
+        <div class="dd-meta-item"><span class="dd-meta-k">Vak</span><span class="dd-meta-v">Browser Technologies</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Thema</span><span class="dd-meta-v">JavaScript &amp; de browser</span></div>
+      </div>
+      <div class="dd-body">
+        <div class="dd-section"><div class="dd-h">Wat ik deed</div><div class="dd-p">Werken met de DOM, data ophalen met fetch en async/await, en de event loop leren begrijpen. Dingen die "vanzelf" leken te werken, vielen ineens op hun plek.</div></div>
+        <div class="dd-section"><div class="dd-h">Nieuwe inzichten</div><div class="dd-p">✎ Vul hier je eigen reflectie aan: wat verraste je, wat ging mis, wat neem je mee?</div></div>
+        <div class="dd-tags"><span class="dd-pill">javascript</span><span class="dd-pill">apis</span></div>
       </div>
     </div>
-    <div class="insp-section">
-      <div class="insp-title">Presenteren</div>
-      <button class="export-btn primary" onclick="startPresent()">▶ Start presentatie</button>
-    </div>`;
-}
+  </div>
+</article>
 
-function showProps(f) {
-  const linkBtn = f.detail
-    ? `<button class="export-btn primary" onclick="openDetail(frames.find(fr=>fr.id==='${f.id}'))">↗ Open detailpagina</button>`
-    : f.link
-    ? `<button class="export-btn primary" onclick="window.open('${f.link}','_blank')">↗ Open artikel</button>`
-    : `<button class="export-btn" onclick="flyToFrame('${f.id}')">Zoom naar frame</button>`;
-  document.getElementById('inspBody').innerHTML = `
-    <div class="align-row">
-      ${['M3 4v16','M4 3h16','M21 4v16','M3 4v16M21 4v16','M4 3h16M4 21h16','M3 4v16M12 4v16M21 4v16']
-        .map(d=>`<div class="align-btn"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="${d}"/></svg></div>`).join('')}
-    </div>
-    <div class="insp-section">
-      <div class="insp-title">Positie</div>
-      <div class="field-grid">
-        <div class="field"><span class="f-key">X</span><span class="f-val">${f.x}</span></div>
-        <div class="field"><span class="f-key">Y</span><span class="f-val">${f.y}</span></div>
-        <div class="field"><span class="f-key">W</span><span class="f-val">${f.w}</span></div>
-        <div class="field"><span class="f-key">H</span><span class="f-val">${f.h}</span></div>
-        <div class="field"><span class="f-key">∠</span><span class="f-val">0°</span></div>
-        <div class="field"><span class="f-key">◠</span><span class="f-val">${f.type==='wip'?0:4}</span></div>
+<article class="detail" id="d-vak-hcd" style="--accent:#34d399; --bg:#001a0e">
+  <div class="detail-grid"></div>
+  <div class="detail-top">
+    <a class="detail-back" href="#"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg> Terug naar canvas</a>
+    <div class="detail-crumb">Vakken &amp; Projecten / <b>HCD</b></div>
+    <a class="detail-close" href="#" title="Sluiten (Esc)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  </div>
+  <div class="detail-scroll">
+    <div class="dd-frame-label">HCD — VoiceReader</div>
+    <div class="detail-doc">
+      <img class="dd-hero-img" src="projects-img/HCD.png" alt="HCD — VoiceReader">
+      <div class="dd-hero">
+        <div class="dd-hero-glow"></div>
+        <div class="dd-tag">// vak 03 · hcd</div>
+        <div class="dd-title">Human Centered Design</div>
+        <div class="dd-intro">VoiceReader is een Chrome-extensie gebouwd rond de behoeften van één echte gebruiker: Ihab is blind en gebruikt de hele dag een screenreader. Zijn grootste frustratie was niet de snelheid, maar de vlakke, emotieloze stem. VoiceReader detecteert met AI het genre van een pagina en leest die voor in een bijpassende, emotionele stem.</div>
+        <span class="dd-cta is-soon" title="Link volgt">Bekijk live site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 5h5v5M19 5l-9 9M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/></svg></span>
+      </div>
+      <div class="dd-meta">
+        <div class="dd-meta-item"><span class="dd-meta-k">Vak</span><span class="dd-meta-v">Human Centered Design</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Project</span><span class="dd-meta-v">VoiceReader</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Type</span><span class="dd-meta-v">Chrome-extensie</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Getest met</span><span class="dd-meta-v">Ihab (blind) · 4 weken</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">AI</span><span class="dd-meta-v">ElevenLabs · Gemini</span></div>
+      </div>
+      <div class="dd-body">
+        <div class="dd-section"><div class="dd-h">De gebruiker centraal</div><div class="dd-p">Het hele ontwerp is samen met Ihab tot stand gekomen — een blinde hoofdgebruiker. Vier weken lang testen op mijn eigen laptop, met stemstijlen afgestemd op zijn interesses. Niet ontwerpen vóór, maar mét.</div></div>
+        <div class="dd-section"><div class="dd-h">Hoe het werkt</div><div class="dd-p">AI bepaalt het genre van een pagina; ElevenLabs TTS leest die voor met één stem per genre en stijl. Zo krijgt een verhaal een andere voordracht dan een nieuwsartikel.</div></div>
+        <div class="dd-section"><div class="dd-h">De techniek</div><div class="dd-p">De eerste test met Ihab leidde tot genre-detectie via Claude. Toen Claudes credits op waren ben ik overgestapt naar Google Gemini en heb ik alles teruggebracht naar de extensie zelf.</div></div>
+        <div class="dd-section"><div class="dd-h">Wat ik leerde</div><div class="dd-p">HCD is ontwerpen mét je gebruiker, niet voor een aanname. Verder technisch: Gemini's REST-API gebruikt camelCase en de modelnaam verschilt per API-versie, dus auto-discovery van het model scheelt gedoe. En een echte accessibility-first interface bouwen is iets anders dan "toegankelijk genoeg".</div></div>
+        <div class="dd-tags"><span class="dd-pill">voicereader</span><span class="dd-pill">a11y</span><span class="dd-pill">ai</span></div>
       </div>
     </div>
-    <div class="insp-section">
-      <div class="insp-title">Weergave</div>
-      <div class="field-grid">
-        <div class="field"><span class="f-key">◑</span><span class="f-val">100%</span></div>
-        <div class="field"><span class="f-key">▦</span><span class="f-val">Doorgeven</span></div>
+  </div>
+</article>
+
+<article class="detail" id="d-vak-api" style="--accent:#fbbf24; --bg:#1a1203">
+  <div class="detail-grid"></div>
+  <div class="detail-top">
+    <a class="detail-back" href="#"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg> Terug naar canvas</a>
+    <div class="detail-crumb">Vakken &amp; Projecten / <b>API</b></div>
+    <a class="detail-close" href="#" title="Sluiten (Esc)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  </div>
+  <div class="detail-scroll">
+    <div class="dd-frame-label">API — CMD Casino</div>
+    <div class="detail-doc">
+      <img class="dd-hero-img" src="projects-img/CMD-casino.png" alt="API — CMD Casino">
+      <div class="dd-hero">
+        <div class="dd-hero-glow"></div>
+        <div class="dd-tag">// vak 04 · api</div>
+        <div class="dd-title">API</div>
+        <div class="dd-intro">Voor het API-vak bouwde ik CMD Casino: een full-stack multiplayer casino. Spelers maken een account aan, verdienen credits en spelen real-time Blackjack tegen elkaar. API-gedreven in Astro met één content-API en twee web-API's, gedeployed op Render.</div>
+        <span class="dd-cta is-soon" title="Link volgt">Bekijk live site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 5h5v5M19 5l-9 9M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/></svg></span>
+      </div>
+      <div class="dd-meta">
+        <div class="dd-meta-item"><span class="dd-meta-k">Vak</span><span class="dd-meta-v">API</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Project</span><span class="dd-meta-v">CMD Casino</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Stack</span><span class="dd-meta-v">Astro · Node.js · MongoDB</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Realtime</span><span class="dd-meta-v">WebSockets</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Betalingen</span><span class="dd-meta-v">Mollie (iDEAL)</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Hosting</span><span class="dd-meta-v">Render</span></div>
+      </div>
+      <div class="dd-body">
+        <div class="dd-section"><div class="dd-h">De API's</div><div class="dd-p">Een content-API serveert de in-game spelregelpagina's, gevoed door de Wikipedia-API. De Mollie-API regelt iDEAL-betalingen: Mollie bevestigt een betaling door een webhook op mijn server aan te roepen.</div></div>
+        <div class="dd-section"><div class="dd-h">Real-time multiplayer</div><div class="dd-p">Via WebSockets spelen meerdere mensen aan dezelfde Blackjack-tafel, live. Een pratende dealer maakt de tafel af.</div></div>
+        <div class="dd-section"><div class="dd-h">Server-authoritative &amp; anti-cheat</div><div class="dd-p">Alle spellogica draait op de server, niet in de browser. Daardoor kan een speler de kaarten niet manipuleren — de client vraagt alleen, de server beslist.</div></div>
+        <div class="dd-section"><div class="dd-h">Wat ik leerde</div><div class="dd-p">Wikipedia-artikelen zijn enorm en vol ruis, dus ik cache ze en roep de API nooit twee keer aan voor hetzelfde artikel. Verder: webhooks afhandelen, consistent camelCase aanhouden zoals de API doet, en deployen op Render. API-kosten zijn een echte drempel — caching is dan niet luxe maar noodzaak.</div></div>
+        <div class="dd-tags"><span class="dd-pill">websockets</span><span class="dd-pill">mollie api</span><span class="dd-pill">wikipedia api</span></div>
       </div>
     </div>
-    <div class="insp-section">
-      <div class="insp-title">Vulling <span class="add">+</span></div>
-      <div class="color-row">
-        <div class="swatch" style="background:${f.bgColor}"></div>
-        <span class="color-hex">${f.bgColor.replace('#','')}</span>
-        <span class="color-op">100%</span>
-        <svg class="color-eye" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.5"/></svg>
+  </div>
+</article>
+
+<article class="detail" id="d-proj-sprint0" style="--accent:#f59e0b; --bg:#140d00">
+  <div class="detail-grid"></div>
+  <div class="detail-top">
+    <a class="detail-back" href="#"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg> Terug naar canvas</a>
+    <div class="detail-crumb">Vakken &amp; Projecten / <b>Sprint 0</b></div>
+    <a class="detail-close" href="#" title="Sluiten (Esc)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  </div>
+  <div class="detail-scroll">
+    <div class="dd-frame-label">Sprint 0</div>
+    <div class="detail-doc">
+      <img class="dd-hero-img" src="projects-img/mitchopoly.png" alt="Sprint 0">
+      <div class="dd-hero">
+        <div class="dd-hero-glow"></div>
+        <div class="dd-tag">// project · feb 2026</div>
+        <div class="dd-title">Sprint 0</div>
+        <div class="dd-intro">De introductie-opdracht: maak in 9 dagen een one-page website over jezelf, met je leerdoelen erin. Ik wilde iets nieuws leren en koos voor 3D — Three.js en WebGL. Wat begon als een 3D-portfolio werd uiteindelijk een interactief Monopoly-speelbord over mijn leven.</div>
+        <span class="dd-cta is-soon" title="Link volgt">Bekijk live site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 5h5v5M19 5l-9 9M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/></svg></span>
+      </div>
+      <div class="dd-meta">
+        <div class="dd-meta-item"><span class="dd-meta-k">Opdracht</span><span class="dd-meta-v">Website over jezelf</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Periode</span><span class="dd-meta-v">3–11 feb 2026</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Technieken</span><span class="dd-meta-v">Three.js · WebGL</span></div>
+      </div>
+      <div class="dd-body">
+        <div class="dd-section"><div class="dd-h">Het 3D-portfolio</div><div class="dd-p">Three.js leren door te doen: .glb-modellen van Sketchfab en Poly, en leren werken met camera, lichten, canvas en het comprimeren van modellen. Daarna interactie op scroll — een tennisracket dat een slag maakt en een auto die het scherm in rijdt met draaiende wielen. Veel wiskunde, want het draaipunt van het racket zat in het midden in plaats van aan het uiteinde.</div></div>
+        <div class="dd-section"><div class="dd-h">De pivot naar Monopoly</div><div class="dd-p">Een nieuw concept: een speelbord waarbij de straten thema's uit mijn leven zijn — sport, studie, hobby, games, muziek. Met 3D-dobbelstenen, een lopende pion en speelkaarten die hun inhoud uit een eigen API halen.</div></div>
+        <div class="dd-section"><div class="dd-h">Wat ik leerde</div><div class="dd-p">De GLTFLoader gaf de hele dag 404's, dus ben ik teruggevallen op simpele Three.js-vormen — niet blijven hangen, doorbouwen. Het eureka-moment: niet het bord draaien bij een bocht, maar de camera. En ik bouwde een eigen API van ~260 regels toen die van de opleiding nergens te vinden was. Leerdoelen: ontwerpen met 3D, betere animaties met wow-factor, en interactie waarbij de gebruiker voelt dat híj de site bestuurt.</div></div>
+        <div class="dd-tags"><span class="dd-pill">three.js</span><span class="dd-pill">webgl</span><span class="dd-pill">3d</span></div>
       </div>
     </div>
-    <div class="insp-section">
-      <div class="insp-title">Selectiekleuren</div>
-      <div class="color-row">
-        <div class="swatch" style="background:${f.accentColor}"></div>
-        <span class="color-hex">${f.accentColor.replace('#','')}</span>
-        <span class="color-op">100%</span>
+  </div>
+</article>
+
+<article class="detail" id="d-proj-hackathon" style="--accent:#10b981; --bg:#021a0e">
+  <div class="detail-grid"></div>
+  <div class="detail-top">
+    <a class="detail-back" href="#"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg> Terug naar canvas</a>
+    <div class="detail-crumb">Vakken &amp; Projecten / <b>Hackathon</b></div>
+    <a class="detail-close" href="#" title="Sluiten (Esc)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  </div>
+  <div class="detail-scroll">
+    <div class="dd-frame-label">Hackathon</div>
+    <div class="detail-doc">
+      <img class="dd-hero-img" src="projects-img/hackathon.png" alt="Hackathon">
+      <div class="dd-hero">
+        <div class="dd-hero-glow"></div>
+        <div class="dd-tag">// project · mrt 2026</div>
+        <div class="dd-title">Hackathon</div>
+        <div class="dd-intro">Een intensieve sprint van twee dagen: met een team van scratch naar een werkend prototype.</div>
+        <span class="dd-cta is-soon" title="Link volgt">Bekijk live site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 5h5v5M19 5l-9 9M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/></svg></span>
+      </div>
+      <div class="dd-meta">
+        <div class="dd-meta-item"><span class="dd-meta-k">Type</span><span class="dd-meta-v">Teamproject</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Duur</span><span class="dd-meta-v">48 uur</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Periode</span><span class="dd-meta-v">mrt 2026</span></div>
+      </div>
+      <div class="dd-body">
+        <div class="dd-section"><div class="dd-h">Wat we maakten</div><div class="dd-p">✎ Beschrijf hier het probleem, jullie oplossing en jouw rol in het team.</div></div>
+        <div class="dd-section"><div class="dd-h">Wat ik leerde</div><div class="dd-p">✎ Wat nam je mee uit het werken onder druk?</div></div>
+        <div class="dd-tags"><span class="dd-pill">team</span><span class="dd-pill">48 uur</span></div>
       </div>
     </div>
-    <div class="insp-section">
-      <div class="insp-title">Acties <span class="add">+</span></div>
-      ${linkBtn}
-    </div>`;
-}
+  </div>
+</article>
 
-/* ───────── Camera ───────── */
-function flyToFrame(id) {
-  const f = frames.find(fr => fr.id === id);
-  if (!f) return;
-  const ww = wrap.clientWidth, wh = wrap.clientHeight;
-  const tz = Math.min(ww/(f.w+120), wh/(f.h+120), 1.4);
-  animateTo(ww/2-(f.x+f.w/2)*tz, wh/2-(f.y+f.h/2)*tz, tz);
-}
-function animateTo(tx,ty,tz) {
-  const sx=camX, sy=camY, sz=zoom, dur=380, start=performance.now();
-  function step(now) {
-    const t=Math.min((now-start)/dur,1), e=t<0.5?2*t*t:-1+(4-2*t)*t;
-    camX=sx+(tx-sx)*e; camY=sy+(ty-sy)*e; zoom=sz+(tz-sz)*e;
-    applyTransform(); if(t<1) requestAnimationFrame(step);
-  }
-  requestAnimationFrame(step);
-}
-function applyTransform() {
-  canvasEl.style.transform = `translate(${camX}px,${camY}px) scale(${zoom})`;
-  document.getElementById('zoomDisplay').textContent = Math.round(zoom*100)+'%';
-  const sz = 24*zoom;
-  const dg = document.getElementById('dot-grid');
-  dg.style.backgroundSize = `${sz}px ${sz}px`;
-  dg.style.backgroundPosition = `${camX%sz}px ${camY%sz}px`;
-  updateMinimap();
-}
-function updateMinimap() {
-  const vp = document.getElementById('minimapViewport');
-  const mmW=150, mmH=96, sx=mmW/TOTAL_W, sy=mmH/TOTAL_H;
-  const vw=wrap.clientWidth/zoom, vh=wrap.clientHeight/zoom;
-  const ox=-camX/zoom, oy=-camY/zoom;
-  vp.style.left=Math.max(0,Math.min(mmW-2,ox*sx))+'px';
-  vp.style.top=Math.max(0,Math.min(mmH-2,oy*sy))+'px';
-  vp.style.width=Math.min(mmW,vw*sx)+'px';
-  vp.style.height=Math.min(mmH,vh*sy)+'px';
-}
-function fitAll() {
-  const ww=wrap.clientWidth, wh=wrap.clientHeight, pad=60;
-  const tz=Math.min((ww-pad*2)/TOTAL_W,(wh-pad*2)/TOTAL_H);
-  animateTo(ww/2-(TOTAL_W/2)*tz, wh/2-(TOTAL_H/2)*tz, tz);
-}
-function resetZoom() { animateTo(wrap.clientWidth/2-TOTAL_W/2, wrap.clientHeight/2-TOTAL_H/2, 1); }
-function zoomBy(f) {
-  const ww=wrap.clientWidth/2, wh=wrap.clientHeight/2;
-  const nz=Math.max(0.1,Math.min(4,zoom*f));
-  camX=ww-(ww-camX)*(nz/zoom); camY=wh-(wh-camY)*(nz/zoom); zoom=nz;
-  applyTransform();
-}
-function setTool(t) {
-  tool=t;
-  document.querySelectorAll('.tb-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tool'+t.charAt(0).toUpperCase()+t.slice(1))?.classList.add('active');
-}
-
-/* ───────── Present mode ───────── */
-let presenting = false, presentIndex = 0;
-function startPresent() {
-  presenting = true; presentIndex = 0;
-  if (selectedId) { const i = frames.findIndex(f=>f.id===selectedId); if(i>=0) presentIndex=i; }
-  document.getElementById('present').classList.add('on');
-  document.getElementById('presentPage').textContent = '  ·  ' + PAGES[currentPage].name;
-  buildPresentDots();
-  renderPresent();
-}
-function stopPresent() { presenting = false; document.getElementById('present').classList.remove('on'); }
-function presentStep(d) {
-  presentIndex = (presentIndex + d + frames.length) % frames.length;
-  renderPresent();
-}
-function buildPresentDots() {
-  const dots = document.getElementById('presentDots');
-  dots.innerHTML = '';
-  frames.forEach((f,i) => {
-    const dot = document.createElement('div');
-    dot.className = 'present-dot' + (i===presentIndex ? ' active' : '');
-    dot.addEventListener('click', () => { presentIndex=i; renderPresent(); });
-    dots.appendChild(dot);
-  });
-}
-function renderPresent() {
-  const f = frames[presentIndex];
-  const stage = document.getElementById('presentStage');
-  const fr = document.getElementById('presentFrame');
-  const sw = stage.clientWidth, sh = stage.clientHeight;
-  const scale = Math.min((sw*0.86)/f.w, (sh*0.86)/f.h);
-  fr.style.width = f.w+'px'; fr.style.height = f.h+'px';
-  fr.style.background = f.bgColor;
-  fr.style.transform = `scale(${scale})`;
-  fr.style.border = f.type==='wip' ? `1px dashed ${f.accentColor}44` : 'none';
-  fr.innerHTML = frameInnerHTML(f);
-  document.getElementById('presentName').textContent = f.label;
-  document.getElementById('presentCount').textContent = (presentIndex+1)+' / '+frames.length;
-  document.querySelectorAll('.present-dot').forEach((d,i)=>d.classList.toggle('active', i===presentIndex));
-}
-
-/* ───────── Detail page ───────── */
-let detailOpen = false;
-function openDetail(f) {
-  if (!f || !f.detail) return;
-  detailOpen = true;
-  const d = f.detail, acc = f.accentColor;
-  document.getElementById('detailCrumb').innerHTML = `${PAGES[currentPage].name} / <b>${f.label.replace(/ —.*$/,'')}</b>`;
-  document.getElementById('detailLabel').textContent = f.label;
-  const doc = document.getElementById('detailDoc');
-  doc.style.background = f.bgColor;
-  doc.innerHTML = `
-    <div class="dd-hero">
-      <div class="dd-hero-glow" style="background:radial-gradient(ellipse at 15% 0%,${acc}2e 0%,transparent 60%)"></div>
-      <div class="dd-tag" style="color:${acc}">${f.tag}</div>
-      <div class="dd-title" style="color:${acc}">${f.title.replace(/\n/g,' ')}</div>
-      <div class="dd-intro">${d.intro}</div>
+<article class="detail" id="d-proj-meester" style="--accent:#3b82f6; --bg:#020c1a">
+  <div class="detail-grid"></div>
+  <div class="detail-top">
+    <a class="detail-back" href="#"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M15 5l-7 7 7 7"/></svg> Terug naar canvas</a>
+    <div class="detail-crumb">Vakken &amp; Projecten / <b>Meesterproef</b></div>
+    <a class="detail-close" href="#" title="Sluiten (Esc)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 6l12 12M18 6L6 18"/></svg></a>
+  </div>
+  <div class="detail-scroll">
+    <div class="dd-frame-label">Meesterproef</div>
+    <div class="detail-doc">
+      <div class="dd-hero">
+        <div class="dd-hero-glow"></div>
+        <div class="dd-tag">// project · jun 2026</div>
+        <div class="dd-title">Meester proef</div>
+        <div class="dd-intro">De afsluiting van de minor: alles wat je geleerd hebt samenbrengen in één project, met een echt team en een echte opdrachtgever.</div>
+        <span class="dd-cta is-soon" title="Link volgt">Bekijk live site <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 5h5v5M19 5l-9 9M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5"/></svg></span>
+      </div>
+      <div class="dd-meta">
+        <div class="dd-meta-item"><span class="dd-meta-k">Type</span><span class="dd-meta-v">Eindproject</span></div>
+        <div class="dd-meta-item"><span class="dd-meta-k">Deadline</span><span class="dd-meta-v">19 juni 2026</span></div>
+      </div>
+      <div class="dd-body">
+        <div class="dd-section"><div class="dd-h">Waar het over gaat</div><div class="dd-p">✎ Vul hier aan zodra je project loopt: opdrachtgever, vraagstuk en jouw rol in het team.</div></div>
+        <div class="dd-section"><div class="dd-h">Wat ik wil bereiken</div><div class="dd-p">✎ Jouw doelen voor de meesterproef.</div></div>
+        <div class="dd-tags"><span class="dd-pill">eindproject</span><span class="dd-pill">team</span></div>
+      </div>
     </div>
-    ${(d.meta&&d.meta.length) ? `<div class="dd-meta">${d.meta.map(m=>`<div class="dd-meta-item"><span class="dd-meta-k">${m.k}</span><span class="dd-meta-v">${m.v}</span></div>`).join('')}</div>` : ''}
-    <div class="dd-body">
-      ${d.sections.map(s=>`<div class="dd-section"><div class="dd-h" style="color:${acc}">${s.h}</div><div class="dd-p">${s.p.replace(/\n/g,'<br><br>')}</div></div>`).join('')}
-      <div class="dd-tags">${(f.pills||[]).map(p=>`<span class="dd-pill" style="color:${p.c};border-color:${p.c}55;background:${p.b}">${p.l}</span>`).join('')}</div>
-    </div>`;
-  document.getElementById('detailScroll').scrollTop = 0;
-  document.getElementById('detail').classList.add('on');
-}
-function closeDetail() { detailOpen = false; document.getElementById('detail').classList.remove('on'); }
+  </div>
+</article>
 
-/* ───────── Input ───────── */
-wrap.addEventListener('mousedown', e => {
-  if (e.button!==0) return;
-  const onCanvas = e.target===canvasEl||e.target.id==='dot-grid'||e.target.classList.contains('section-label');
-  if (onCanvas || tool==='hand') {
-    isPanning=true; wrap.classList.add('panning');
-    panStart={x:e.clientX,y:e.clientY}; camStart={x:camX,y:camY};
-    if(onCanvas) selectFrame(null);
-  }
-});
-window.addEventListener('mouseup',()=>{ isPanning=false; wrap.classList.remove('panning'); });
-window.addEventListener('mousemove', e => {
-  if(isPanning){ camX=camStart.x+e.clientX-panStart.x; camY=camStart.y+e.clientY-panStart.y; applyTransform(); }
-});
-wrap.addEventListener('wheel', e => {
-  e.preventDefault();
-  const r=wrap.getBoundingClientRect(), mx=e.clientX-r.left, my=e.clientY-r.top;
-  const f=e.deltaY<0?1.09:0.92, nz=Math.max(0.1,Math.min(4,zoom*f));
-  camX=mx-(mx-camX)*(nz/zoom); camY=my-(my-camY)*(nz/zoom); zoom=nz;
-  applyTransform();
-},{passive:false});
-
-window.addEventListener('keydown', e => {
-  if(e.target.tagName==='INPUT') return;
-  if(detailOpen) { if(e.key==='Escape') closeDetail(); return; }
-  if(presenting) {
-    if(e.key==='ArrowRight'||e.key===' '||e.key==='Enter') { e.preventDefault(); presentStep(1); }
-    if(e.key==='ArrowLeft') presentStep(-1);
-    if(e.key==='Escape') stopPresent();
-    return;
-  }
-  if(e.altKey && (e.key==='p'||e.key==='P')) { startPresent(); return; }
-  if(e.shiftKey && e.key==='1') { fitAll(); return; }
-  if(e.key==='1') resetZoom();
-  if(e.key==='f'||e.key==='F') setTool('frame');
-  if(e.key==='h'||e.key==='H') setTool('hand');
-  if(e.key==='v'||e.key==='V') setTool('move');
-  if(e.key==='t'||e.key==='T') setTool('text');
-  if(e.key==='r'||e.key==='R') setTool('shape');
-  if(e.key==='p'||e.key==='P') setTool('pen');
-  if(e.key==='c'||e.key==='C') setTool('comment');
-  if(e.key==='Escape') selectFrame(null);
-});
-
-window.addEventListener('resize', () => { applyTransform(); if(presenting) renderPresent(); });
-
-buildPagesList();
-buildCanvas();
-showPageProps();
-setTimeout(fitAll, 80);
-</script>
+<script src="canvas.js" defer></script>
 </body>
 </html>
