@@ -1,9 +1,9 @@
 /* ════════════════════════════════════════════════════════════════════════
    HTML-first canvas — JavaScript only for what HTML/CSS cannot do:
-   pan/zoom, dragging, the minimap, collaborator cursors, comments,
-   prototype arrows, measurement lines, present mode and persistence.
-   Content lives in index.html; visual state (pages, tabs, tools, detail)
-   is driven by CSS. This script reads the DOM, it does not generate it.
+   pan/zoom, dragging, the minimap, collaborator cursors, measurement lines,
+   present mode and selection. Content lives in index.html; visual state
+   (pages, tabs, tools, detail) is driven by CSS. This script reads the DOM.
+   State (frame positions) lives only in memory — no persistence.
    ════════════════════════════════════════════════════════════════════════ */
 
 const wrap = document.getElementById('canvasWrap');
@@ -13,28 +13,20 @@ const SVGNS = 'http://www.w3.org/2000/svg';
 let camX = 0, camY = 0, zoom = 0.78;
 let isPanning = false, panStart = {x:0,y:0}, camStart = {x:0,y:0};
 let currentPage = 'over', frames = [], TOTAL_W = 0, TOTAL_H = 0;
-let selectedId = null, selectedElt = null, justDragged = false;
-let COMMENTS = {}, ELEMENTS = {}, commentSeq = 1, eltSeq = 1, openPop = null, measure = null;
+let selectedId = null, justDragged = false, measure = null;
 
 /* ───────── tiny helpers ───────── */
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const activeTool = () => ($('input[name=tool]:checked') || {}).value || 'move';
-const protoActive = () => !!$('#itab-proto:checked');
 const detailOpen = () => /^#d-/.test(location.hash);
 function setToolRadio(v){ const r = $(`input[name=tool][value="${v}"]`); if (r) r.checked = true; }
 function geo(el){ return { x:parseFloat(el.style.left)||0, y:parseFloat(el.style.top)||0, w:parseFloat(el.style.width)||0, h:parseFloat(el.style.height)||0 }; }
 function accentOf(el){ return el.style.getPropertyValue('--accent').trim() || '#888'; }
 function bgOf(el){ return el.style.getPropertyValue('--bg').trim() || '#1e1e1e'; }
 function labelOf(el){ return el.querySelector('.frame-label')?.textContent || ''; }
-function pageOf(el){ return el.closest('.page').dataset.page; }
-function frameKey(el){ return pageOf(el) + ':' + el.dataset.id; }
 function frameById(id){ return frames.find(f => f.dataset.id === id); }
 function canvasToScreen(cx, cy){ return { x:camX + cx*zoom, y:camY + cy*zoom }; }
-function evToCanvas(e){ const r = wrap.getBoundingClientRect(); return { x:(e.clientX-r.left-camX)/zoom, y:(e.clientY-r.top-camY)/zoom }; }
-
-/* state (frame positions, dropped elements, comments) lives only in memory
-   for the duration of the session — no localStorage is used. */
 
 /* ───────── page state (which page is active) ───────── */
 function setActivePage(){
@@ -45,10 +37,9 @@ function setActivePage(){
   canvasEl.style.width = TOTAL_W + 'px';
   canvasEl.style.height = TOTAL_H + 'px';
   $('#fileName').textContent = 'Mitchell Scholte — ' + section.dataset.name;
-  selectedId = null; clearEltSelection(); closeCommentPop(); measure = null;
+  selectedId = null; measure = null;
   layoutSectionLabels();
   buildMinimap();
-  renderComments();
   drawOverlay();
   showPageProps();
   fitAll();
@@ -110,7 +101,6 @@ function applyTransform(){
   dg.style.backgroundSize = `${sz}px ${sz}px`;
   dg.style.backgroundPosition = `${camX%sz}px ${camY%sz}px`;
   updateMinimap();
-  positionComments();
   drawOverlay();
 }
 function fitAll(){
@@ -128,7 +118,7 @@ function zoomBy(f){
 
 /* ───────── selection + inspector ───────── */
 function selectFrame(id){
-  selectedId = id; clearEltSelection();
+  selectedId = id;
   $$('.frame').forEach(el => el.classList.remove('selected'));
   $$('.layer-row').forEach(el => el.classList.remove('selected'));
   if (id) {
@@ -209,37 +199,11 @@ function showProps(el){
     </div>`;
 }
 
-/* ───────── prototype flows + measurement (screen-space SVG) ───────── */
+/* ───────── measurement lines (screen-space SVG, Alt-hover) ───────── */
 function drawOverlay(){
   const svg = $('#overlaySvg'); if (!svg) return;
   svg.innerHTML = '';
-  if (protoActive()) drawFlows(svg);
-  if (measure && !protoActive()) drawMeasure(svg, measure.a, measure.b);
-}
-function drawFlows(svg){
-  const defs = document.createElementNS(SVGNS, 'defs');
-  defs.innerHTML = '<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#0d99ff"/></marker>';
-  svg.appendChild(defs);
-  for (let i = 0; i < frames.length-1; i++){
-    const a = geo(frames[i]), b = geo(frames[i+1]);
-    const p1 = canvasToScreen(a.x+a.w, a.y+a.h/2), p2 = canvasToScreen(b.x, b.y+b.h/2);
-    const dx = Math.max(40, Math.abs(p2.x-p1.x)*0.5);
-    const path = document.createElementNS(SVGNS, 'path');
-    path.setAttribute('class','flow-path'); path.setAttribute('marker-end','url(#arrow)');
-    path.setAttribute('d', `M${p1.x},${p1.y} C${p1.x+dx},${p1.y} ${p2.x-dx},${p2.y} ${p2.x},${p2.y}`);
-    svg.appendChild(path);
-    const dot = document.createElementNS(SVGNS, 'circle');
-    dot.setAttribute('class','flow-dot'); dot.setAttribute('cx',p1.x); dot.setAttribute('cy',p1.y); dot.setAttribute('r',4);
-    svg.appendChild(dot);
-  }
-  if (frames.length){
-    const s = canvasToScreen(geo(frames[0]).x, geo(frames[0]).y);
-    const rect = document.createElementNS(SVGNS,'rect');
-    rect.setAttribute('class','flow-badge'); rect.setAttribute('x',s.x); rect.setAttribute('y',s.y-22); rect.setAttribute('width',48); rect.setAttribute('height',18); rect.setAttribute('rx',4);
-    const t = document.createElementNS(SVGNS,'text');
-    t.setAttribute('class','flow-badge-txt'); t.setAttribute('x',s.x+8); t.setAttribute('y',s.y-9); t.textContent='START';
-    svg.appendChild(rect); svg.appendChild(t);
-  }
+  if (measure) drawMeasure(svg, measure.a, measure.b);
 }
 function drawMeasure(svg, aEl, bEl){
   const a = geo(aEl), b = geo(bEl);
@@ -270,56 +234,6 @@ function showMeasure(e){
 }
 function hideMeasure(){ if (measure){ measure = null; drawOverlay(); } }
 
-/* ───────── comments ───────── */
-function curComments(){ return COMMENTS[currentPage] || (COMMENTS[currentPage] = []); }
-function addCommentAt(e){
-  const p = evToCanvas(e);
-  const c = { id:commentSeq++, x:p.x, y:p.y, text:'' };
-  curComments().push(c); renderComments(); setToolRadio('move'); openCommentPop(c, true);
-}
-function renderComments(){
-  const layer = $('#commentsLayer'); if (!layer) return;
-  layer.querySelectorAll('.comment-pin').forEach(n => n.remove());
-  curComments().forEach((c, i) => {
-    const pin = document.createElement('div');
-    pin.className = 'comment-pin'; pin.dataset.id = c.id;
-    pin.innerHTML = `<svg width="28" height="28" viewBox="0 0 28 28"><path d="M5 3h18a2 2 0 012 2v12a2 2 0 01-2 2H12l-6 5v-5H5a2 2 0 01-2-2V5a2 2 0 012-2z" fill="#ffd60a"/></svg><span class="cp-num">${i+1}</span>`;
-    pin.addEventListener('mousedown', ev => ev.stopPropagation());
-    pin.addEventListener('click', ev => { ev.stopPropagation(); openCommentPop(c, false); });
-    layer.appendChild(pin);
-  });
-  positionComments();
-}
-function positionComments(){
-  const layer = $('#commentsLayer'); if (!layer) return;
-  const arr = curComments();
-  layer.querySelectorAll('.comment-pin').forEach(pin => {
-    const c = arr.find(x => String(x.id) === pin.dataset.id); if (!c) return;
-    const s = canvasToScreen(c.x, c.y); pin.style.left = s.x + 'px'; pin.style.top = s.y + 'px';
-  });
-  if (openPop){ const c = arr.find(x => x.id === openPop.id), pop = $('#activePop'); if (c && pop){ const s = canvasToScreen(c.x, c.y); pop.style.left = (s.x+16) + 'px'; pop.style.top = s.y + 'px'; } }
-}
-function openCommentPop(c, focus){
-  closeCommentPop(); openPop = c;
-  const pop = document.createElement('div');
-  pop.className = 'comment-pop'; pop.id = 'activePop';
-  pop.innerHTML = `
-    <div class="cpop-head"><div class="cpop-av">MS</div><div class="cpop-name">Mitchell Scholte</div></div>
-    <textarea placeholder="Schrijf een reactie…"></textarea>
-    <div class="cpop-actions">
-      <button class="cpop-btn ghost" data-act="del">Verwijderen</button>
-      <button class="cpop-btn primary" data-act="save">Opslaan</button>
-    </div>`;
-  pop.querySelector('textarea').value = c.text || '';
-  pop.addEventListener('mousedown', e => e.stopPropagation());
-  pop.querySelector('[data-act="save"]').addEventListener('click', () => { c.text = pop.querySelector('textarea').value; closeCommentPop(); });
-  pop.querySelector('[data-act="del"]').addEventListener('click', () => { const a = curComments(), i = a.indexOf(c); if (i >= 0) a.splice(i,1); closeCommentPop(); renderComments(); });
-  $('#commentsLayer').appendChild(pop);
-  positionComments();
-  if (focus) setTimeout(() => pop.querySelector('textarea').focus(), 0);
-}
-function closeCommentPop(){ openPop = null; const p = $('#activePop'); if (p) p.remove(); }
-
 /* ───────── collaborator cursors (4 docenten — pas namen hier aan) ───────── */
 const COLLABS = [
   { name:'Jad',     color:'#0d99ff' },
@@ -347,7 +261,6 @@ function animCursors(){
 /* ───────── frame dragging ───────── */
 function startFrameDrag(e, el){
   if (e.button !== 0 || activeTool() !== 'move') return;
-  if (e.target.closest('.elt') || e.target.closest('.comment-pin')) return;
   e.stopPropagation();
   const start = { x:e.clientX, y:e.clientY }, orig = geo(el); let moved = false;
   selectFrame(el.dataset.id);
@@ -357,8 +270,7 @@ function startFrameDrag(e, el){
     el.style.left = Math.round(orig.x+dx) + 'px';
     el.style.top  = Math.round(orig.y+dy) + 'px';
     el.classList.add('dragging');
-    if (selectedId === el.dataset.id && !protoActive()) showProps(el);
-    if (protoActive()) drawOverlay();
+    if (selectedId === el.dataset.id) showProps(el);
     buildMinimap();
   }
   function up(){
@@ -367,62 +279,6 @@ function startFrameDrag(e, el){
     if (moved){ justDragged = true; setTimeout(() => justDragged = false, 0); layoutSectionLabels(); }
   }
   document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
-}
-
-/* ───────── elements dragged from the palette ───────── */
-const ELT_DEFAULTS = { heading:{text:'Kop'}, text:{text:'Dubbelklik om te bewerken', w:170}, button:{text:'Knop'}, shape:{w:120, h:80, color:'#3b82f6'} };
-function dropElement(e, frameEl, layer){
-  e.preventDefault();
-  const type = e.dataTransfer.getData('text/plain'); if (!ELT_DEFAULTS[type]) return;
-  const r = wrap.getBoundingClientRect();
-  const cx = (e.clientX-r.left-camX)/zoom, cy = (e.clientY-r.top-camY)/zoom;
-  const g = geo(frameEl), d = ELT_DEFAULTS[type], key = frameKey(frameEl);
-  const el = { id:'e'+(eltSeq++), type, x:Math.round(cx-g.x), y:Math.round(cy-g.y) };
-  if (d.text !== undefined) el.text = d.text;
-  if (d.w) el.w = d.w; if (d.h) el.h = d.h; if (d.color) el.color = d.color;
-  (ELEMENTS[key] = ELEMENTS[key] || []).push(el);
-  renderFrameElements(key, layer); selectElt(key, el.id);
-}
-function renderFrameElements(key, layer){
-  layer.innerHTML = '';
-  (ELEMENTS[key] || []).forEach(el => {
-    const node = document.createElement('div');
-    node.className = 'elt elt-' + el.type; node.dataset.id = el.id;
-    node.style.left = el.x + 'px'; node.style.top = el.y + 'px';
-    if (el.w) node.style.width = el.w + 'px';
-    if (el.type === 'shape'){ node.style.height = (el.h||80) + 'px'; node.style.background = el.color || '#3b82f6'; }
-    else node.textContent = el.text || '';
-    node.addEventListener('mousedown', ev => startEltDrag(ev, key, el, node));
-    node.addEventListener('click', ev => ev.stopPropagation());
-    node.addEventListener('dblclick', ev => { ev.stopPropagation(); if (el.type !== 'shape') editElt(key, el, node); });
-    layer.appendChild(node);
-  });
-}
-function selectElt(key, id){
-  clearEltSelection(); selectedElt = { key, id };
-  document.querySelector(`.elt[data-id="${id}"]`)?.classList.add('selected');
-}
-function clearEltSelection(){ if (selectedElt){ $$('.elt.selected').forEach(n => n.classList.remove('selected')); selectedElt = null; } }
-function startEltDrag(e, key, el, node){
-  if (e.button !== 0 || activeTool() !== 'move') return;
-  if (node.getAttribute('contenteditable') === 'true') return;
-  e.stopPropagation(); selectElt(key, el.id);
-  const start = { x:e.clientX, y:e.clientY }, orig = { x:el.x, y:el.y }; let moved = false;
-  function mv(ev){ const dx = (ev.clientX-start.x)/zoom, dy = (ev.clientY-start.y)/zoom; if (Math.abs(dx) > 2 || Math.abs(dy) > 2) moved = true; el.x = Math.round(orig.x+dx); el.y = Math.round(orig.y+dy); node.style.left = el.x+'px'; node.style.top = el.y+'px'; }
-  function up(){ document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up); }
-  document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
-}
-function editElt(key, el, node){
-  node.setAttribute('contenteditable', 'true'); node.focus();
-  const sel = window.getSelection(), range = document.createRange(); range.selectNodeContents(node); sel.removeAllRanges(); sel.addRange(range);
-  function done(){ node.removeAttribute('contenteditable'); el.text = node.textContent; node.removeEventListener('blur', done); }
-  node.addEventListener('blur', done);
-}
-function deleteSelectedElt(){
-  if (!selectedElt) return false;
-  const { key, id } = selectedElt;
-  if (ELEMENTS[key]){ ELEMENTS[key] = ELEMENTS[key].filter(x => x.id !== id); const layer = frameById(key.split(':')[1])?.querySelector('.elt-layer'); if (layer) renderFrameElements(key, layer); }
-  selectedElt = null; return true;
 }
 
 /* ───────── present mode ───────── */
@@ -465,18 +321,17 @@ function renderPresent(){
 /* ───────── input ───────── */
 wrap.addEventListener('mousedown', e => {
   if (e.button !== 0) return;
-  if (activeTool() === 'comment'){ addCommentAt(e); return; }
   const onCanvas = e.target === canvasEl || e.target.id === 'dot-grid' || e.target.classList.contains('page') || e.target.classList.contains('section-label');
   if (onCanvas || activeTool() === 'hand'){
     isPanning = true; wrap.classList.add('panning');
     panStart = { x:e.clientX, y:e.clientY }; camStart = { x:camX, y:camY };
-    if (onCanvas){ selectFrame(null); closeCommentPop(); }
+    if (onCanvas) selectFrame(null);
   }
 });
 window.addEventListener('mouseup', () => { isPanning = false; wrap.classList.remove('panning'); });
 window.addEventListener('mousemove', e => {
   if (isPanning){ camX = camStart.x + e.clientX - panStart.x; camY = camStart.y + e.clientY - panStart.y; applyTransform(); return; }
-  if (e.altKey && selectedId && !protoActive()) showMeasure(e); else hideMeasure();
+  if (e.altKey && selectedId) showMeasure(e); else hideMeasure();
 });
 window.addEventListener('keyup', e => { if (e.key === 'Alt') hideMeasure(); });
 wrap.addEventListener('wheel', e => {
@@ -490,7 +345,6 @@ wrap.addEventListener('wheel', e => {
 window.addEventListener('keydown', e => {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable){ if (e.key === 'Escape') e.target.blur(); return; }
   if (detailOpen()){ if (e.key === 'Escape') location.hash = ''; return; }
-  if ((e.key === 'Delete' || e.key === 'Backspace') && deleteSelectedElt()){ e.preventDefault(); return; }
   if (presenting){
     if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); presentStep(1); }
     if (e.key === 'ArrowLeft') presentStep(-1);
@@ -500,15 +354,9 @@ window.addEventListener('keydown', e => {
   if (e.altKey && (e.key === 'p' || e.key === 'P')){ startPresent(); return; }
   if (e.shiftKey && e.key === '1'){ fitAll(); return; }
   if (e.key === '1') resetZoom();
-  if (e.key === 'f' || e.key === 'F') setToolRadio('frame');
   if (e.key === 'h' || e.key === 'H') setToolRadio('hand');
   if (e.key === 'v' || e.key === 'V') setToolRadio('move');
-  if (e.key === 't' || e.key === 'T') setToolRadio('text');
-  if (e.key === 'r' || e.key === 'R') setToolRadio('shape');
-  if (e.key === 'p' || e.key === 'P') setToolRadio('pen');
-  if (e.key === 'k' || e.key === 'K') setToolRadio('scale');
-  if (e.key === 'c' || e.key === 'C') setToolRadio('comment');
-  if (e.key === 'Escape'){ closeCommentPop(); selectFrame(null); }
+  if (e.key === 'Escape') selectFrame(null);
 });
 
 window.addEventListener('resize', () => { applyTransform(); if (presenting) renderPresent(); });
@@ -517,16 +365,11 @@ window.addEventListener('resize', () => { applyTransform(); if (presenting) rend
 function wire(){
   $$('.frame').forEach(el => {
     el.addEventListener('mousedown', e => startFrameDrag(e, el));
-    el.addEventListener('click', e => { e.stopPropagation(); if (!justDragged && activeTool() !== 'comment') selectFrame(el.dataset.id); });
+    el.addEventListener('click', e => { e.stopPropagation(); if (!justDragged) selectFrame(el.dataset.id); });
     el.addEventListener('dblclick', e => { e.stopPropagation(); if (document.getElementById('d-' + el.dataset.id)) location.hash = 'd-' + el.dataset.id; });
-    el.addEventListener('dragover', e => { e.preventDefault(); el.classList.add('drop-target'); });
-    el.addEventListener('dragleave', () => el.classList.remove('drop-target'));
-    el.addEventListener('drop', e => { el.classList.remove('drop-target'); dropElement(e, el, el.querySelector('.elt-layer')); });
   });
   $$('.layer-row').forEach(row => row.addEventListener('click', () => { selectFrame(row.dataset.target); flyToFrame(row.dataset.target); }));
-  $$('.palette-item').forEach(it => it.addEventListener('dragstart', e => { e.dataTransfer.setData('text/plain', it.dataset.elt); e.dataTransfer.effectAllowed = 'copy'; }));
   $$('input[name=page]').forEach(r => r.addEventListener('change', setActivePage));
-  $$('input[name=itab]').forEach(r => r.addEventListener('change', drawOverlay));
 }
 
 /* ───────── init ───────── */
