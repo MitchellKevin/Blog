@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../article.css">
+    <title>Weekly Geek — Killian Valkhof</title>
+</head>
+<body>
+
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-follower" id="cursor-follower"></div>
+
+    <div class="grain"></div>
+
+    <header class="header">
+        <div class="header-logo"><a href="../index.html"><img src="../logo.png" alt="Blog of Mitchell Scholte"></a></div>
+        <nav class="header-nav">
+            <a href="../index.html#scroll-selection">Weekly Geek</a>
+            <a href="../index.html#grid-selection">Weekly Nerd</a>
+        </nav>
+        <div class="header-meta">2026 — WDD</div>
+    </header>
+
+    <article class="article">
+
+        <div class="article-hero">
+            <div class="article-hero-image">
+                <img src="killian-valkhof.png" alt="Killian Valkhof">
+            </div>
+            <div class="article-hero-overlay"></div>
+            <div class="article-hero-content">
+                <div class="article-eyebrow">
+                    <span class="article-type">Weekly Geek</span>
+                    <span class="article-sep">—</span>
+                    <span class="article-number">No. 001</span>
+                </div>
+                <h1 class="article-title">
+                    <span>Killian</span>
+                    <em>Valkhof</em>
+                </h1>
+                <p class="article-subtitle">Polypane</p>
+            </div>
+        </div>
+
+        <div class="article-body">
+
+            <div class="article-meta-bar reveal">
+                <div class="meta-item">
+                    <span class="meta-label">Spreker</span>
+                    <span class="meta-value">Killian Valkhof</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Bedrijf</span>
+                    <span class="meta-value">Polypane</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Datum</span>
+                    <span class="meta-value">Feb 2026</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Onderwerp</span>
+                    <span class="meta-value">Developer Tooling</span>
+                </div>
+            </div>
+
+            <div class="article-content">
+
+                <div class="article-intro reveal">
+                    <p class="lead">Killian Valkhof bouwde een eigen browser — niet omdat het makkelijk was, maar omdat geen enkele bestaande browser goed genoeg was voor zijn werk als developer.</p>
+                </div>
+
+                <div class="article-section reveal">
+                    <h2>Over de spreker</h2>
+                    <p>Killian Valkhof is een Nederlandse developer en ondernemer, het meest bekend als de maker van Polypane — een browser speciaal gebouwd voor developers en designers. Hij werkt al jaren met webtechnologieën en heeft een sterke focus op toegankelijkheid, responsive design en developer experience.</p>
+                    <p>Naast Polypane draagt hij regelmatig bij aan webstandaarden en schrijft hij over het bouwen van tools die het werk van developers concreet beter maken. Hij spreekt op conferenties wereldwijd over hoe je als developer je eigen gereedschappen kunt verbeteren.</p>
+                </div>
+
+                <div class="article-section reveal">
+                    <h2>Wat hebben we geleerd?</h2>
+                    <p>Killian nam ons mee in het denkproces achter Polypane: waarom hij gefrustreerd raakte met bestaande browsers, en hoe hij besloot dat probleem zelf op te lossen. Dat klinkt ambitieus — en dat is het ook — maar zijn verhaal liet zien dat de combinatie van een duidelijk probleem, technische kennis en doorzettingsvermogen ver kan komen.</p>
+                    <ul class="article-list">
+                        <li>Polypane toont meerdere schermformaten tegelijk, zodat responsive design testen veel sneller gaat dan switchen tussen DevTools breakpoints.</li>
+                        <li>De browser heeft ingebouwde toegankelijkheidschecks die direct feedback geven terwijl je bouwt, zonder aparte tools of extensies.</li>
+                        <li>Killian bouwde Polypane met Electron — hij liet zien hoe je met webtechnologie een volwaardige desktop-applicatie kunt maken.</li>
+                        <li>Hij benadrukte het belang van je eigen tooling begrijpen: wie zijn eigen tools bouwt, leert veel over hoe het web echt werkt.</li>
+                    </ul>
+                </div>
+
+                <div class="article-quote reveal">
+                    <blockquote>
+                        "Je hoeft niet te wachten tot iemand anders het probleem oplost dat jij tegenkomt. Soms ben jij de aangewezen persoon om dat te doen."
+                    </blockquote>
+                    <cite>— Killian Valkhof</cite>
+                </div>
+
+                <div class="article-section reveal">
+                    <h2>Mijn reflectie</h2>
+                    <p>Wat me het meest bijbleef was niet de techniek achter Polypane, maar de mindset. Killian begon met een frustratie en maakte er een product van dat nu door duizenden developers dagelijks wordt gebruikt. Dat is een heel andere benadering dan wachten op een update van Chrome of een nieuwe extensie.</p>
+                    <p>Ik herken die frustratie wel — het constant heen en weer schakelen tussen viewport-formaten kost echt tijd. Polypane lost dat op een elegante manier op. Tegelijk vond ik het interessant om te zien hoe hij bewust keuzes maakte over wat hij wél en niet in de browser stopte, om de focus te bewaren.</p>
+                </div>
+
+                <div class="article-section reveal">
+                    <h2>Toepassing in mijn werk</h2>
+                    <p>Ik wil Polypane serieus gaan uitproberen bij mijn projecten binnen de minor, met name voor het testen van responsive layouts en toegankelijkheid. Maar het grotere inzicht dat ik meeneem: kijk naar de frustraties in je eigen workflow en vraag je af of je ze zelf kunt oplossen, al is het maar een klein script of tool. Je leert er het meest van door het gewoon te proberen.</p>
+                </div>
+
+            </div>
+
+        </div>
+
+    </article>
+
+    <nav class="article-nav reveal">
+        <a href="../index.html" class="article-nav-item article-nav-prev">
+            <span class="nav-label">Terug</span>
+            <span class="nav-title">← Overzicht</span>
+        </a>
+        <a href="../index.html" class="article-nav-home">Alle artikelen</a>
+        <a href="peter-paul-koch.html" class="article-nav-item article-nav-next">
+            <span class="nav-label">Volgende</span>
+            <span class="nav-title">Pieter Paul Koch →</span>
+        </a>
+    </nav>
+
+    <footer class="footer">
+        <div class="footer-logo"><img src="../logo.png" alt="Minor WDD Blog"></div>
+        <div class="footer-center">Minor WDD Blog</div>
+        <div class="footer-meta">© 2026</div>
+    </footer>
+
+    <script src="../script.js"></script>
+    <script src="../article.js"></script>
+</body>
+</html>
