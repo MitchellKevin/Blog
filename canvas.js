@@ -1,6 +1,6 @@
 /* ════════════════════════════════════════════════════════════════════════
    HTML-first canvas — JavaScript only for what HTML/CSS cannot do:
-   pan/zoom, dragging, the minimap, collaborator cursors, measurement lines,
+   pan/zoom, the minimap, collaborator cursors, measurement lines,
    present mode and selection. Content lives in index.html; visual state
    (pages, tabs, tools, detail) is driven by CSS. This script reads the DOM.
    State (frame positions) lives only in memory — no persistence.
@@ -13,7 +13,7 @@ const SVGNS = 'http://www.w3.org/2000/svg';
 let camX = 0, camY = 0, zoom = 0.78;
 let isPanning = false, panStart = {x:0,y:0}, camStart = {x:0,y:0};
 let currentPage = 'over', frames = [], TOTAL_W = 0, TOTAL_H = 0;
-let selectedId = null, justDragged = false, measure = null;
+let selectedId = null;
 
 /* ───────── tiny helpers ───────── */
 const $  = (s, r = document) => r.querySelector(s);
@@ -37,10 +37,9 @@ function setActivePage(){
   canvasEl.style.width = TOTAL_W + 'px';
   canvasEl.style.height = TOTAL_H + 'px';
   $('#fileName').textContent = 'Mitchell Scholte — ' + section.dataset.name;
-  selectedId = null; measure = null;
+  selectedId = null;
   layoutSectionLabels();
   buildMinimap();
-  drawOverlay();
   showPageProps();
   fitAll();
 }
@@ -101,7 +100,6 @@ function applyTransform(){
   dg.style.backgroundSize = `${sz}px ${sz}px`;
   dg.style.backgroundPosition = `${camX%sz}px ${camY%sz}px`;
   updateMinimap();
-  drawOverlay();
 }
 function fitAll(){
   const ww = wrap.clientWidth, wh = wrap.clientHeight, pad = 60;
@@ -199,41 +197,6 @@ function showProps(el){
     </div>`;
 }
 
-/* ───────── measurement lines (screen-space SVG, Alt-hover) ───────── */
-function drawOverlay(){
-  const svg = $('#overlaySvg'); if (!svg) return;
-  svg.innerHTML = '';
-  if (measure) drawMeasure(svg, measure.a, measure.b);
-}
-function drawMeasure(svg, aEl, bEl){
-  const a = geo(aEl), b = geo(bEl);
-  function line(x1,y1,x2,y2){ const l = document.createElementNS(SVGNS,'line'); l.setAttribute('class','measure-line'); l.setAttribute('x1',x1); l.setAttribute('y1',y1); l.setAttribute('x2',x2); l.setAttribute('y2',y2); svg.appendChild(l); }
-  function label(x,y,txt){
-    const w = String(txt).length*7+12;
-    const r = document.createElementNS(SVGNS,'rect'); r.setAttribute('class','measure-pill'); r.setAttribute('x',x-w/2); r.setAttribute('y',y-8); r.setAttribute('width',w); r.setAttribute('height',16); r.setAttribute('rx',3); svg.appendChild(r);
-    const t = document.createElementNS(SVGNS,'text'); t.setAttribute('class','measure-txt'); t.setAttribute('x',x); t.setAttribute('y',y+4); t.setAttribute('text-anchor','middle'); t.textContent = txt; svg.appendChild(t);
-  }
-  let hx1, hx2, gapX = 0;
-  if (b.x >= a.x+a.w){ gapX = b.x-(a.x+a.w); hx1 = a.x+a.w; hx2 = b.x; }
-  else if (a.x >= b.x+b.w){ gapX = a.x-(b.x+b.w); hx1 = b.x+b.w; hx2 = a.x; }
-  if (gapX > 0){ const cy = b.y+b.h/2, s1 = canvasToScreen(hx1,cy), s2 = canvasToScreen(hx2,cy); line(s1.x,s1.y,s2.x,s2.y); label((s1.x+s2.x)/2,s1.y-3,Math.round(gapX)); }
-  let vy1, vy2, gapY = 0;
-  if (b.y >= a.y+a.h){ gapY = b.y-(a.y+a.h); vy1 = a.y+a.h; vy2 = b.y; }
-  else if (a.y >= b.y+b.h){ gapY = a.y-(b.y+b.h); vy1 = b.y+b.h; vy2 = a.y; }
-  if (gapY > 0){ const cx = b.x+b.w/2, s1 = canvasToScreen(cx,vy1), s2 = canvasToScreen(cx,vy2); line(s1.x,s1.y,s2.x,s2.y); label(s1.x,(s1.y+s2.y)/2,Math.round(gapY)); }
-}
-function showMeasure(e){
-  if (!selectedId) return;
-  const fe = e.target.closest && e.target.closest('.frame');
-  const id = fe ? fe.dataset.id : null;
-  if (!id || id === selectedId){ hideMeasure(); return; }
-  if (measure && measure.b.dataset.id === id) return;
-  const a = frameById(selectedId), b = frameById(id);
-  if (!a || !b) return;
-  measure = { a, b }; drawOverlay();
-}
-function hideMeasure(){ if (measure){ measure = null; drawOverlay(); } }
-
 /* ───────── collaborator cursors (4 docenten — pas namen hier aan) ───────── */
 const COLLABS = [
   { name:'Jad',     color:'#0d99ff' },
@@ -256,29 +219,6 @@ function setupCursors(){
 function animCursors(){
   cursorState.forEach(s => { s.cx += (s.tx-s.cx)*0.02; s.cy += (s.ty-s.cy)*0.02; const p = canvasToScreen(s.cx, s.cy); s.el.style.transform = `translate(${p.x}px,${p.y}px)`; });
   requestAnimationFrame(animCursors);
-}
-
-/* ───────── frame dragging ───────── */
-function startFrameDrag(e, el){
-  if (e.button !== 0 || activeTool() !== 'move') return;
-  e.stopPropagation();
-  const start = { x:e.clientX, y:e.clientY }, orig = geo(el); let moved = false;
-  selectFrame(el.dataset.id);
-  function mv(ev){
-    const dx = (ev.clientX-start.x)/zoom, dy = (ev.clientY-start.y)/zoom;
-    if (Math.abs(dx) > 2 || Math.abs(dy) > 2) moved = true;
-    el.style.left = Math.round(orig.x+dx) + 'px';
-    el.style.top  = Math.round(orig.y+dy) + 'px';
-    el.classList.add('dragging');
-    if (selectedId === el.dataset.id) showProps(el);
-    buildMinimap();
-  }
-  function up(){
-    document.removeEventListener('mousemove', mv); document.removeEventListener('mouseup', up);
-    el.classList.remove('dragging');
-    if (moved){ justDragged = true; setTimeout(() => justDragged = false, 0); layoutSectionLabels(); }
-  }
-  document.addEventListener('mousemove', mv); document.addEventListener('mouseup', up);
 }
 
 /* ───────── present mode ───────── */
@@ -331,9 +271,7 @@ wrap.addEventListener('mousedown', e => {
 window.addEventListener('mouseup', () => { isPanning = false; wrap.classList.remove('panning'); });
 window.addEventListener('mousemove', e => {
   if (isPanning){ camX = camStart.x + e.clientX - panStart.x; camY = camStart.y + e.clientY - panStart.y; applyTransform(); return; }
-  if (e.altKey && selectedId) showMeasure(e); else hideMeasure();
 });
-window.addEventListener('keyup', e => { if (e.key === 'Alt') hideMeasure(); });
 wrap.addEventListener('wheel', e => {
   e.preventDefault();
   const r = wrap.getBoundingClientRect(), mx = e.clientX-r.left, my = e.clientY-r.top;
@@ -351,11 +289,6 @@ window.addEventListener('keydown', e => {
     if (e.key === 'Escape') stopPresent();
     return;
   }
-  if (e.altKey && (e.key === 'p' || e.key === 'P')){ startPresent(); return; }
-  if (e.shiftKey && e.key === '1'){ fitAll(); return; }
-  if (e.key === '1') resetZoom();
-  if (e.key === 'h' || e.key === 'H') setToolRadio('hand');
-  if (e.key === 'v' || e.key === 'V') setToolRadio('move');
   if (e.key === 'Escape') selectFrame(null);
 });
 
@@ -364,8 +297,7 @@ window.addEventListener('resize', () => { applyTransform(); if (presenting) rend
 /* ───────── wiring ───────── */
 function wire(){
   $$('.frame').forEach(el => {
-    el.addEventListener('mousedown', e => startFrameDrag(e, el));
-    el.addEventListener('click', e => { e.stopPropagation(); if (!justDragged) selectFrame(el.dataset.id); });
+    el.addEventListener('click', e => { e.stopPropagation(); selectFrame(el.dataset.id); });
     el.addEventListener('dblclick', e => { e.stopPropagation(); if (document.getElementById('d-' + el.dataset.id)) location.hash = 'd-' + el.dataset.id; });
   });
   $$('.layer-row').forEach(row => row.addEventListener('click', () => { selectFrame(row.dataset.target); flyToFrame(row.dataset.target); }));

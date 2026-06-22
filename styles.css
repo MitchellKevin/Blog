@@ -510,6 +510,17 @@ svg {
   background: radial-gradient(ellipse at 20% 80%, color-mix(in srgb, var(--accent) 20%, transparent) 0%, transparent 65%);
 }
 
+.fc-cover-photo {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 16px;
+  object-fit: cover;
+  margin-bottom: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
 .fc-cover-tag {
   font-family: var(--mono);
   font-size: 10px;
@@ -557,8 +568,9 @@ svg {
 .fc-post-img {
   display: block;
   width: calc(100% + 48px);
-  height: 104px;
+  height: 200px;
   object-fit: cover;
+  object-position: center 20%;
   margin: -24px -24px 2px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   background: #000;
@@ -1305,8 +1317,9 @@ svg {
 .dd-hero-img {
   display: block;
   width: 100%;
-  height: 320px;
+  height: 420px;
   object-fit: cover;
+  object-position: center 20%;
   background: #000;
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
@@ -1539,29 +1552,6 @@ svg {
   fill: #fff;
   font-family: var(--sans);
   font-size: 9px;
-  font-weight: 700;
-}
-
-.measure-line {
-  stroke: #f24e1e;
-  stroke-width: 1;
-}
-
-.measure-tick {
-  stroke: #f24e1e;
-  stroke-width: 1;
-  stroke-dasharray: 3 3;
-  opacity: .6;
-}
-
-.measure-pill {
-  fill: #f24e1e;
-}
-
-.measure-txt {
-  fill: #fff;
-  font-family: var(--mono);
-  font-size: 10px;
   font-weight: 700;
 }
 
