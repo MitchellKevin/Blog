@@ -50,7 +50,7 @@ svg {
   display: none;
 }
 
-/* ───────────── Top toolbar ───────────── */
+/* Top toolbar */
 .toolbar {
   position: fixed;
   top: 0;
@@ -228,7 +228,7 @@ svg {
   background: var(--blue-hover);
 }
 
-/* ───────────── App grid ───────────── */
+/* App grid */
 .app {
   position: fixed;
   top: 40px;
@@ -239,7 +239,7 @@ svg {
   grid-template-columns: 240px 1fr 240px;
 }
 
-/* ───────────── Left panel ───────────── */
+/* Left panel */
 .panel-left {
   background: var(--chrome);
   border-right: 1px solid var(--border);
@@ -417,7 +417,7 @@ svg {
   margin-bottom: -6px;
 }
 
-/* ───────────── Canvas ───────────── */
+/* Canvas */
 .canvas-wrap {
   position: relative;
   overflow: hidden;
@@ -728,7 +728,7 @@ svg {
   white-space: nowrap;
 }
 
-/* ───────────── Right panel (Design inspector) ───────────── */
+/* Right panel (Design inspector) */
 .panel-right {
   background: var(--chrome);
   border-left: 1px solid var(--border);
@@ -952,7 +952,7 @@ svg {
   background: var(--blue-hover);
 }
 
-/* ───────────── Floating zoom pill ───────────── */
+/* Floating zoom pill */
 .zoombar {
   position: fixed;
   bottom: 16px;
@@ -1048,7 +1048,7 @@ svg {
   font-size: 10px;
 }
 
-/* ───────────── Present mode ───────────── */
+/* Present mode */
 .present {
   position: fixed;
   inset: 0;
@@ -1190,7 +1190,7 @@ svg {
   background: var(--blue);
 }
 
-/* ───────────── Detail page (Figma-style reader, CSS :target) ───────────── */
+/* Detail page (Figma-style reader, CSS :target) */
 .detail {
   position: fixed;
   inset: 0;
@@ -1489,7 +1489,7 @@ svg {
   background: var(--bg);
 }
 
-/* ───────────── Collaborator cursors ───────────── */
+/* Collaborator cursors */
 #cursorsLayer,
 #commentsLayer {
   position: absolute;
@@ -1524,7 +1524,7 @@ svg {
   box-shadow: 0 2px 6px rgba(0, 0, 0, .3);
 }
 
-/* ───────────── Overlay SVG (flows + measure) ───────────── */
+/* Overlay SVG (flows + measure) */
 #overlaySvg {
   position: absolute;
   inset: 0;
@@ -1555,7 +1555,7 @@ svg {
   font-weight: 700;
 }
 
-/* ───────────── Comment pins ───────────── */
+/* Comment pins */
 .comment-pin {
   position: absolute;
   width: 28px;
@@ -1675,7 +1675,7 @@ svg {
   color: #fb7185;
 }
 
-/* ───────────── Dropped elements inside frames ───────────── */
+/* Dropped elements inside frames */
 .elt-layer {
   position: absolute;
   inset: 0;
@@ -1754,7 +1754,7 @@ body:has(input[name="tool"][value="comment"]:checked) .canvas-wrap {
   cursor: crosshair;
 }
 
-/* ───────────── Asset palette (left) ───────────── */
+/* Asset palette (left) */
 .palette {
   padding: 10px 8px;
 }
@@ -1802,7 +1802,7 @@ body:has(input[name="tool"][value="comment"]:checked) .canvas-wrap {
   font-weight: 600;
 }
 
-/* ───────────── Page state (which page is shown) ───────────── */
+/* Page state (which page is shown) */
 #pg-over:checked~.app .page[data-page="over"],
 #pg-vakken:checked~.app .page[data-page="vakken"],
 #pg-geeks:checked~.app .page[data-page="geeks"],

@@ -1,10 +1,7 @@
-/* ════════════════════════════════════════════════════════════════════════
-   HTML-first canvas — JavaScript only for what HTML/CSS cannot do:
-   pan/zoom, the minimap, collaborator cursors, measurement lines,
-   present mode and selection. Content lives in index.html; visual state
-   (pages, tabs, tools, detail) is driven by CSS. This script reads the DOM.
-   State (frame positions) lives only in memory — no persistence.
-   ════════════════════════════════════════════════════════════════════════ */
+/* Canvas view: pan/zoom, minimap, collaborator cursors, present mode and
+   selection. The content lives in index.html and is read from the DOM here.
+   Page, tool and detail state is handled in CSS; frame positions live in
+   memory only. */
 
 const wrap = document.getElementById('canvasWrap');
 const canvasEl = document.getElementById('canvas');
@@ -15,7 +12,7 @@ let isPanning = false, panStart = {x:0,y:0}, camStart = {x:0,y:0};
 let currentPage = 'over', frames = [], TOTAL_W = 0, TOTAL_H = 0;
 let selectedId = null;
 
-/* ───────── tiny helpers ───────── */
+/* tiny helpers */
 const $  = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const activeTool = () => ($('input[name=tool]:checked') || {}).value || 'move';
@@ -28,7 +25,7 @@ function labelOf(el){ return el.querySelector('.frame-label')?.textContent || ''
 function frameById(id){ return frames.find(f => f.dataset.id === id); }
 function canvasToScreen(cx, cy){ return { x:camX + cx*zoom, y:camY + cy*zoom }; }
 
-/* ───────── page state (which page is active) ───────── */
+/* page state (which page is active) */
 function setActivePage(){
   currentPage = ($('input[name=page]:checked') || {}).value || 'over';
   const section = $(`.page[data-page="${currentPage}"]`);
@@ -53,7 +50,7 @@ function layoutSectionLabels(){
   });
 }
 
-/* ───────── minimap ───────── */
+/* minimap */
 function buildMinimap(){
   const mm = $('#minimapFrames'); mm.innerHTML = '';
   const mmW = 150, mmH = 96, sx = mmW / TOTAL_W, sy = mmH / TOTAL_H;
@@ -77,7 +74,7 @@ function updateMinimap(){
   vp.style.height = Math.min(mmH, vh*sy) + 'px';
 }
 
-/* ───────── camera ───────── */
+/* camera */
 function flyToFrame(id){
   const f = frameById(id); if (!f) return;
   const g = geo(f), ww = wrap.clientWidth, wh = wrap.clientHeight;
@@ -114,7 +111,7 @@ function zoomBy(f){
   applyTransform();
 }
 
-/* ───────── selection + inspector ───────── */
+/* selection + inspector */
 function selectFrame(id){
   selectedId = id;
   $$('.frame').forEach(el => el.classList.remove('selected'));
@@ -197,7 +194,7 @@ function showProps(el){
     </div>`;
 }
 
-/* ───────── collaborator cursors (4 docenten — pas namen hier aan) ───────── */
+/* collaborator cursors (4 docenten, pas hun namen hier aan) */
 const COLLABS = [
   { name:'Jad',     color:'#0d99ff' },
   { name:'Cyd',     color:'#0acf83' },
@@ -221,7 +218,7 @@ function animCursors(){
   requestAnimationFrame(animCursors);
 }
 
-/* ───────── present mode ───────── */
+/* present mode */
 let presenting = false, presentIndex = 0;
 function startPresent(){
   presenting = true; presentIndex = 0;
@@ -258,7 +255,7 @@ function renderPresent(){
   $$('.present-dot').forEach((d, i) => d.classList.toggle('active', i === presentIndex));
 }
 
-/* ───────── input ───────── */
+/* input */
 wrap.addEventListener('mousedown', e => {
   if (e.button !== 0) return;
   const onCanvas = e.target === canvasEl || e.target.id === 'dot-grid' || e.target.classList.contains('page') || e.target.classList.contains('section-label');
@@ -294,7 +291,7 @@ window.addEventListener('keydown', e => {
 
 window.addEventListener('resize', () => { applyTransform(); if (presenting) renderPresent(); });
 
-/* ───────── wiring ───────── */
+/* wiring */
 function wire(){
   $$('.frame').forEach(el => {
     el.addEventListener('click', e => { e.stopPropagation(); selectFrame(el.dataset.id); });
@@ -304,7 +301,7 @@ function wire(){
   $$('input[name=page]').forEach(r => r.addEventListener('change', setActivePage));
 }
 
-/* ───────── init ───────── */
+/* init */
 wire();
 setActivePage();
 setupCursors();
